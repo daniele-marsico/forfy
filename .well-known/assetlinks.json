@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "it.controllinghub.forfy",
+        "sha256_cert_fingerprints": ["B0:DB:3D:DE:09:89:06:07:A1:8E:6A:B6:51:59:F5:C9:B2:CE:CD:BC:00:83:19:AF:BF:3D:68:61:98:DE:36:15"]
+      }
+    }]
