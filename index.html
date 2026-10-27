@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Forfy</title>
+<meta name="description" content="Calcolo di tasse e contributi INPS per partite IVA forfettarie: incassi, tetto 85.000 € e quanto accantonare.">
+<meta name="theme-color" content="#0d6e57" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f1513" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Forfy">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#15211d; --muted:#5b6b65; --line:#dfe6e2;
+  --accent:#0d6e57; --on-accent:#ffffff; --accent-soft:#e1f1ec;
+  --warn:#b26a00; --warn-soft:#fbefd9; --crit:#b3261e; --crit-soft:#fbe3e1;
+  --bar:#0d6e57;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  --nav-h:64px; color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0f1513; --surface:#18211e; --ink:#e6eeea; --muted:#93a59e; --line:#2a3632;
+  --accent:#4fc7a4; --on-accent:#08201a; --accent-soft:#183a31;
+  --warn:#f0b04a; --warn-soft:#3a2d14; --crit:#ff8a80; --crit-soft:#3d1c1a; --bar:#0f1513; color-scheme:dark}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+[hidden]{display:none!important}
+.num{font-variant-numeric:tabular-nums}
+
+/* App bar */
+.appbar{position:sticky;top:0;z-index:20;background:var(--bar);color:#fff;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;justify-content:space-between;gap:12px}
+@media (prefers-color-scheme:dark){.appbar{border-bottom:1px solid var(--line)}}
+.brand{font-family:var(--display);font-weight:800;font-size:1.35rem;letter-spacing:-.02em}
+.brand span{color:#f0b04a}
+.yearnav{display:flex;align-items:center;gap:2px;font-weight:700}
+.yearnav button{background:transparent;border:0;color:inherit;font-size:1.3rem;width:36px;height:36px;border-radius:50%;cursor:pointer}
+.yearnav button:disabled{opacity:.35}
+.yearnav button:active{background:rgba(255,255,255,.15)}
+
+main{padding:16px max(16px,env(safe-area-inset-right,0px)) calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 96px) max(16px,env(safe-area-inset-left,0px));
+  max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.view{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+h2{font-family:var(--display);font-size:1.05rem;margin:0;font-weight:700}
+.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+/* Hero accantonare */
+.hero{background:var(--accent);color:var(--on-accent);border:0}
+.hero .label{color:inherit;opacity:.8}
+.hero .big{font-family:var(--display);font-weight:800;font-size:2.6rem;line-height:1.05;letter-spacing:-.02em}
+.hero .sub{opacity:.85;font-size:.92rem}
+.hero .marg{display:inline-block;background:rgba(255,255,255,.16);border-radius:999px;padding:3px 10px;font-size:.82rem;font-weight:700}
+@media (prefers-color-scheme:dark){.hero .marg{background:rgba(0,0,0,.15)}}
+
+/* Meter */
+.cap-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.cap-top .v{font-family:var(--display);font-weight:800;font-size:1.6rem}
+.meter{position:relative;height:14px;border-radius:7px;background:var(--accent-soft);margin-top:18px}
+.meter .fill{position:absolute;inset:0 auto 0 0;border-radius:7px;background:var(--accent);transition:width .4s ease}
+.meter.warn .fill{background:var(--warn)} .meter.crit .fill{background:var(--crit)}
+.tick{position:absolute;top:-18px;bottom:-3px;border-left:2px dashed var(--muted);line-height:1}
+.tick span{position:absolute;top:0;right:100%;padding-right:4px;font-size:.7rem;color:var(--muted);white-space:nowrap}
+.tick.end{left:auto;right:0;border-left:0;border-right:2px dashed var(--muted)}
+.tick.end span{right:2px}
+.status{border-radius:10px;padding:10px 12px;font-size:.88rem}
+.status.ok{background:var(--accent-soft)} .status.warn{background:var(--warn-soft)} .status.crit{background:var(--crit-soft)}
+
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:9px 12px}
+dt{color:var(--muted)} dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+dd.net{color:var(--accent)}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 8px;background:var(--accent-soft);color:var(--accent);vertical-align:1px}
+.split{height:10px;border-radius:5px;display:flex;overflow:hidden;background:var(--line)}
+.split span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px}
+
+.dates{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.dates li{display:grid;grid-template-columns:3.2rem minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.dates li:first-child{border-top:0;padding-top:0}
+.cal{text-align:center;border:1px solid var(--line);border-radius:10px;padding:4px 0;line-height:1.1}
+.cal b{display:block;font-size:1.15rem}
+.cal small{font-size:.65rem;text-transform:uppercase;color:var(--muted);font-weight:700}
+.cal.soon{border-color:var(--warn);background:var(--warn-soft)}
+.dates .what{font-size:.9rem}
+.dates .amt{font-weight:700;font-variant-numeric:tabular-nums;font-size:.9rem}
+
+/* Incassi */
+.month{display:flex;justify-content:space-between;align-items:baseline;padding:4px 2px 0}
+.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.list li{display:grid;grid-template-columns:2.4rem minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line)}
+.list li:first-child{border-top:0}
+.list .d{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700;text-align:center}
+.list .c{overflow-wrap:anywhere}
+.list .v{font-weight:700;font-variant-numeric:tabular-nums}
+.list button.row{all:unset;display:contents;cursor:pointer}
+.empty{text-align:center;padding:28px 16px;color:var(--muted);border:1px dashed var(--line);border-radius:16px}
+.empty b{display:block;color:var(--ink);margin-bottom:4px}
+
+/* Form controls */
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label,.flabel{font-size:.82rem;color:var(--muted);font-weight:700}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;width:100%;min-width:0;appearance:none;-webkit-appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:12px;padding:14px;background:var(--accent);color:var(--on-accent);cursor:pointer;width:100%}
+.btn.sec{background:var(--accent-soft);color:var(--accent)}
+.btn.danger{background:var(--crit-soft);color:var(--crit)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.toggle{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0}
+.toggle span{font-size:.95rem}
+.toggle small{display:block;color:var(--muted);font-size:.8rem}
+.switch{position:relative;width:50px;height:30px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+.switch i{position:absolute;inset:0;border-radius:15px;background:var(--line);transition:background .2s}
+.switch i::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.switch input:checked + i{background:var(--accent)}
+.switch input:checked + i::after{transform:translateX(20px)}
+.switch input:disabled + i{opacity:.4}
+.switch input:focus-visible + i{outline:2px solid var(--accent);outline-offset:2px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{font:inherit;display:flex;justify-content:space-between;gap:10px;text-align:left;background:var(--bg);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px 12px;cursor:pointer}
+.opt b{font-variant-numeric:tabular-nums}
+.coef{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--accent-soft);border-radius:12px;padding:12px 14px}
+.coef strong{font-family:var(--display);font-size:1.5rem;color:var(--accent)}
+details summary{cursor:pointer;font-weight:700;color:var(--muted);font-size:.9rem;list-style:none}
+details summary::before{content:"▸ ";}
+details[open] summary::before{content:"▾ ";}
+.params{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
+.note{font-size:.82rem;color:var(--muted);margin:0}
+.disclaimer{background:var(--warn-soft);border-color:transparent}
+.disclaimer p{margin:0;font-size:.86rem}
+a{color:var(--accent)}
+
+/* FAB + bottom nav */
+.fab{position:fixed;right:max(18px,calc(env(safe-area-inset-right,0px) + 12px));bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 16px);z-index:25;
+  width:60px;height:60px;border-radius:18px;border:0;background:var(--accent);color:var(--on-accent);font-size:2rem;line-height:1;box-shadow:0 6px 18px rgba(13,110,87,.35);cursor:pointer}
+.fab:active{transform:scale(.96)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(3,1fr);padding:0 max(8px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(8px,env(safe-area-inset-left,0px))}
+nav.tabs button{font:inherit;background:none;border:0;height:var(--nav-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--muted);font-size:.72rem;font-weight:700;cursor:pointer}
+nav.tabs button svg{width:24px;height:24px}
+nav.tabs button[aria-selected="true"]{color:var(--accent)}
+nav.tabs button[aria-selected="true"] .ic{background:var(--accent-soft)}
+nav.tabs .ic{display:flex;align-items:center;justify-content:center;width:56px;height:30px;border-radius:15px}
+
+/* Sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;opacity:0;transition:opacity .2s}
+.scrim.on{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);border-radius:20px 20px 0 0;
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));
+  max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px;transform:translateY(100%);transition:transform .25s ease}
+.sheet.on{transform:none}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 4px}
+.sheet h2{font-size:1.15rem}
+.err{color:var(--crit);font-size:.85rem;margin:0}
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 90px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:.9rem;z-index:60;max-width:calc(100% - 32px)}
+.install{display:flex;gap:12px;align-items:center}
+.install-bar{background:var(--surface);border:1px solid var(--accent);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.install-bar .acts{display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.install-bar .btn{padding:11px}
+.act-sum{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.act-sum .t{min-width:0}
+.act-sum .t b{display:block;overflow-wrap:anywhere}
+.act-sum button{font:inherit;font-weight:700;background:var(--accent-soft);color:var(--accent);border:0;border-radius:10px;padding:8px 12px;cursor:pointer;flex:none}
+.welcome{background:var(--accent);color:var(--on-accent);border:0}
+.welcome p{margin:0;opacity:.9}
+.welcome h2{font-size:1.3rem}
+.steps{display:flex;gap:8px;font-size:.78rem;font-weight:700;opacity:.85}
+.hint{font-size:.8rem;color:var(--accent);margin:0}
+.subsec{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.subsec h3{margin:0;font-size:.95rem}
+.guide{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:g}
+.guide li{display:grid;grid-template-columns:2rem minmax(0,1fr);gap:12px;align-items:start;counter-increment:g}
+.guide li::before{content:counter(g);display:flex;align-items:center;justify-content:center;width:2rem;height:2rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:800}
+.guide svg{width:20px;height:20px;vertical-align:-4px;color:var(--accent)}
+.copyrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.copyrow input{font-size:.9rem}
+.copyrow button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:0 14px;background:var(--accent-soft);color:var(--accent)}
+.install img{width:44px;height:44px;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="brand">Forf<span>y</span></div>
+  <div class="yearnav" aria-label="Anno">
+    <button type="button" id="y-prev" aria-label="Anno precedente">‹</button>
+    <span id="y-lbl" class="num">2026</span>
+    <button type="button" id="y-next" aria-label="Anno successivo">›</button>
+  </div>
+</header>
+
+<main>
+  <div class="install-bar" id="install-bar" hidden>
+    <div class="install">
+      <img src="icons/icon-192.png" alt="">
+      <div><b>Installa Forfy sul telefono</b><div class="note" id="install-txt">Aprila dalla schermata Home come un'app, anche senza connessione.</div></div>
+    </div>
+    <div class="acts">
+      <button class="btn" type="button" id="install-btn">Installa app</button>
+      <button class="btn sec" type="button" id="install-no">Non ora</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section class="view" id="v-home" aria-label="Riepilogo" hidden>
+    <div class="act-sum">
+      <div class="t"><span class="label">Calcolo basato su</span><b id="sum-act">Altre attività · 67%</b><span class="small muted" id="sum-gest">Gestione separata · imposta 15%</span></div>
+      <button type="button" id="sum-edit">Modifica</button>
+    </div>
+    <div class="status crit" id="elig" hidden></div>
+    <div class="card hero">
+      <span class="label">Da mettere da parte</span>
+      <div class="big num" id="r-acc">0 €</div>
+      <div class="sub">tasse + contributi stimati sugli incassi del <span id="y2"></span></div>
+      <div><span class="marg">Ogni 100 € incassati: <span class="num" id="r-marg">0 €</span> da parte</span></div>
+    </div>
+
+    <div class="card">
+      <div class="cap-top">
+        <span class="label">Incassato</span>
+        <span class="v num" id="tot">0 €</span>
+      </div>
+      <div class="meter" id="meter" role="img" aria-label="Avanzamento verso il tetto">
+        <div class="fill" id="fill" style="width:0%"></div>
+        <div class="tick" style="left:85%"><span>85k</span></div>
+        <div class="tick end"><span>100k</span></div>
+      </div>
+      <div class="status ok" id="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>Il calcolo</h2>
+      <dl>
+        <dt>Reddito forfettario <span class="pill" id="r-coef">67%</span></dt><dd id="r-red">0 €</dd>
+        <dt>Contributi INPS</dt><dd id="r-inps">0 €</dd>
+        <dt>Imponibile</dt><dd id="r-imp">0 €</dd>
+        <dt>Imposta sostitutiva <span class="pill" id="r-ali">15%</span></dt><dd id="r-tax">0 €</dd>
+        <dt>Netto per te</dt><dd class="net" id="r-net">0 €</dd>
+      </dl>
+      <div class="split" id="split" aria-hidden="true"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Netto</span><span><i style="background:var(--warn)"></i>INPS</span><span><i style="background:var(--crit)"></i>Imposta</span></div>
+      <p class="note">Stima indicativa: non include acconti già versati. Verifica con il tuo commercialista.</p>
+    </div>
+
+    <div class="card">
+      <h2>Contributi INPS</h2>
+      <dl id="inps-detail"></dl>
+    </div>
+
+    <div class="card">
+      <h2>Prossime scadenze</h2>
+      <ul class="dates" id="dates"></ul>
+    </div>
+  </section>
+
+  <!-- INCASSI -->
+  <section class="view" id="v-inc" aria-label="Incassi" hidden>
+    <div class="card">
+      <div class="cap-top"><span class="label">Totale <span id="y3"></span></span><span class="v num" id="tot2">0 €</span></div>
+      <p class="note">Conta la data in cui ricevi il pagamento, non quella della fattura. Tocca un incasso per modificarlo.</p>
+    </div>
+    <div id="inc-list" class="view"></div>
+  </section>
+
+  <!-- ATTIVITA -->
+  <section class="view" id="v-att" aria-label="La tua attività" hidden>
+    <div class="card welcome" id="welcome" hidden>
+      <div class="steps"><span>1 · La tua attività</span><span>→</span><span>2 · I tuoi incassi</span></div>
+      <h2>Benvenuto in Forfy</h2>
+      <p>Per calcolare tasse e contributi serve sapere che attività fai: da questa dipendono il coefficiente di redditività e la gestione INPS.</p>
+    </div>
+
+    <div class="card">
+      <h2>La tua attività</h2>
+      <div class="field">
+        <label for="in-ateco">Codice ATECO o parola chiave</label>
+        <input id="in-ateco" autocomplete="off" placeholder="es. 62.02, software, musica" enterkeyhint="search">
+      </div>
+      <div class="opts" id="ateco-res"></div>
+      <div class="coef"><div><div class="flabel">Coefficiente di redditività</div><div class="small" id="c-grp"></div></div><strong class="num" id="c-coef">67%</strong></div>
+      <div class="field">
+        <label for="in-gest">Gestione contributiva</label>
+        <select id="in-gest">
+          <option value="separata">Gestione separata (professionisti)</option>
+          <option value="artigiani">Artigiani</option>
+          <option value="commercianti">Commercianti</option>
+        </select>
+        <p class="hint" id="gest-dip" hidden></p>
+        <p class="hint" id="gest-hint" hidden>Impostata in automatico in base all'attività scelta. Puoi cambiarla.</p>
+      </div>
+      <label class="toggle" for="in-sgr"><span>Sgravio contributivo 35%<small>Solo artigiani e commercianti, su domanda all'INPS</small></span><span class="switch"><input type="checkbox" id="in-sgr" role="switch"><i></i></span></label>
+      <label class="toggle" for="in-new"><span>Nuova attività<small>Imposta al 5% per i primi 5 anni, se hai i requisiti</small></span><span class="switch"><input type="checkbox" id="in-new" role="switch"><i></i></span></label>
+      <div class="subsec">
+        <h3>Lavoro da dipendente</h3>
+        <label class="toggle" for="in-dip"><span>Sei ancora dipendente?<small>Anche part-time, nel momento in cui usi la partita IVA</small></span><span class="switch"><input type="checkbox" id="in-dip" role="switch"><i></i></span></label>
+        <label class="toggle" for="in-dip35"><span>L'anno scorso il reddito da dipendente o pensione ha superato 35.000 €?<small>Conta il reddito della Certificazione Unica, non la RAL</small></span><span class="switch"><input type="checkbox" id="in-dip35" role="switch"><i></i></span></label>
+        <div class="status" id="dip-msg" hidden></div>
+      </div>
+      <details>
+        <summary>Parametri INPS</summary>
+        <p class="note" style="margin-top:8px">Valori 2026 stimati: correggili con quelli della circolare INPS se differiscono.</p>
+        <div class="params">
+          <div class="field"><label for="p-sep">Gest. separata %</label><input id="p-sep" inputmode="decimal"></div>
+          <div class="field"><label for="p-sepr">Gest. sep. se dipendente %</label><input id="p-sepr" inputmode="decimal"></div>
+          <div class="field"><label for="p-min">Minimale €</label><input id="p-min" inputmode="decimal"></div>
+          <div class="field"><label for="p-qa">Quota fissa artigiani €</label><input id="p-qa" inputmode="decimal"></div>
+          <div class="field"><label for="p-qc">Quota fissa commerc. €</label><input id="p-qc" inputmode="decimal"></div>
+          <div class="field"><label for="p-aa">Oltre minimale artig. %</label><input id="p-aa" inputmode="decimal"></div>
+          <div class="field"><label for="p-ac">Oltre minimale comm. %</label><input id="p-ac" inputmode="decimal"></div>
+        </div>
+        <button class="btn sec" type="button" id="p-reset" style="margin-top:10px">Ripristina valori predefiniti</button>
+      </details>
+      <button class="btn" type="button" id="att-done">Vai al riepilogo</button>
+    </div>
+
+    <div class="card">
+      <h2>I tuoi dati</h2>
+      <p class="note">Gli incassi restano solo su questo telefono: nessun account, nessun server. Fai un backup ogni tanto, ad esempio prima di cambiare telefono.</p>
+      <div class="row2">
+        <button class="btn sec" type="button" id="b-exp">Esporta backup</button>
+        <button class="btn sec" type="button" id="b-imp">Importa backup</button>
+      </div>
+      <input type="file" id="f-imp" accept="application/json,.json" hidden>
+      <button class="btn danger" type="button" id="b-del">Cancella tutti i dati</button>
+    </div>
+
+    <div class="card disclaimer">
+      <h2>Avviso importante</h2>
+      <p>Forfy è uno strumento di stima: non è consulenza fiscale, contabile o previdenziale. I valori usati (soglia di 85.000 €, imposta al 15% o 5%, aliquote e quote minime INPS 2026, coefficienti per codice ATECO) possono cambiare, e la gestione INPS suggerita è solo indicativa. Prima di prendere decisioni o versare importi, verifica sempre con il tuo commercialista.</p>
+      <p><b>Privacy:</b> Forfy non raccoglie dati personali. Tutto ciò che inserisci è salvato nella memoria del tuo browser su questo dispositivo e non viene inviato a nessuno. <a href="privacy.html">Informativa privacy completa</a></p>
+    </div>
+    <p class="note" style="text-align:center">Forfy · versione 1.4 · realizzata da <a href="https://controllinghub.netlify.app" target="_blank" rel="noopener">ControllingHub</a></p>
+  </section>
+</main>
+
+<button class="fab" type="button" id="fab" aria-label="Aggiungi incasso">+</button>
+
+<nav class="tabs" role="tablist">
+  <button type="button" role="tab" data-v="att" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>Attività</button>
+  <button type="button" role="tab" data-v="home" aria-selected="true"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></span>Riepilogo</button>
+  <button type="button" role="tab" data-v="inc" aria-selected="false"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></span>Incassi</button>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<form class="sheet" id="sheet" novalidate hidden aria-labelledby="sh-title">
+  <div class="grab"></div>
+  <h2 id="sh-title">Nuovo incasso</h2>
+  <div class="field"><label for="in-imp">Importo (€)</label><input id="in-imp" inputmode="decimal" placeholder="1.500,00" autocomplete="off" enterkeyhint="next"></div>
+  <div class="field"><label for="in-cli">Cliente</label><input id="in-cli" autocomplete="off" placeholder="es. Rossi Srl" enterkeyhint="done"></div>
+  <div class="field"><label for="in-dat">Data incasso</label><input id="in-dat" type="date"></div>
+  <p class="err" id="err" hidden></p>
+  <button class="btn" type="submit" id="sh-save">Aggiungi</button>
+  <button class="btn danger" type="button" id="sh-del" hidden>Elimina incasso</button>
+</form>
+<div class="sheet" id="ios-guide" hidden role="dialog" aria-labelledby="ig-title">
+  <div class="grab"></div>
+  <h2 id="ig-title">Installa Forfy su iPhone</h2>
+  <div class="status warn" id="ig-inapp" hidden>Hai aperto il link dentro un'altra app. Per installare Forfy devi aprirlo in <b>Safari</b>: copia il link qui sotto e incollalo in Safari, oppure tocca ⋯ e scegli «Apri nel browser».
+    <div class="copyrow" style="margin-top:8px"><input id="ig-url" readonly><button type="button" id="ig-copy">Copia</button></div>
+  </div>
+  <ol class="guide">
+    <li><div>Tocca il tasto <b>Condividi</b> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> nella barra di Safari, in basso (su iPad in alto).</div></li>
+    <li><div>Scorri il menu e tocca <b>Aggiungi alla schermata Home</b> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg>.</div></li>
+    <li><div>Tocca <b>Aggiungi</b> in alto a destra. Forfy compare tra le tue app con la sua icona.</div></li>
+  </ol>
+  <button class="btn" type="button" id="ig-ok">Ho capito</button>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+"use strict";
+const SOGLIA=85000, USCITA=100000, KEY="forfy-state-v1";
+const DEF_P={sep:26.07,sepr:24,min:18808,qa:4521.36,qc:4611.60,aa:24,ac:24.48};
+const GROUPS=[
+ {id:"alim",coef:40,name:"Industrie alimentari e delle bevande",codes:["10","11"],kw:["alimentar","bevand","panific","pasticc","birrific"],gest:"artigiani"},
+ {id:"comm",coef:40,name:"Commercio all'ingrosso e al dettaglio",codes:["45","46.2","46.3","46.4","46.5","46.6","46.7","46.8","46.9","47.1","47.2","47.3","47.4","47.5","47.6","47.7","47.9"],kw:["commercio","negozio","vendita","e-commerce","ecommerce","dettaglio","ingrosso","shop"],gest:"commercianti"},
+ {id:"ambA",coef:40,name:"Commercio ambulante di alimentari e bevande",codes:["47.81"],kw:["ambulante alimentar","street food"],gest:"commercianti"},
+ {id:"ambB",coef:54,name:"Commercio ambulante di altri prodotti",codes:["47.82","47.89"],kw:["ambulante","mercatino","bancarella"],gest:"commercianti"},
+ {id:"costr",coef:86,name:"Costruzioni e attività immobiliari",codes:["41","42","43","68"],kw:["edil","costruz","immobil","muratore","idraulic","elettricist","imbianchin","piastrell"],gest:"artigiani"},
+ {id:"interm",coef:62,name:"Intermediari del commercio",codes:["46.1"],kw:["agente di commercio","rappresentant","procacciat","intermediar"],gest:"commercianti"},
+ {id:"allog",coef:40,name:"Alloggio e ristorazione",codes:["55","56"],kw:["bar","ristorant","b&b","bed and breakfast","affittacamer","catering","pizzeria"],gest:"commercianti"},
+ {id:"prof",coef:78,name:"Attività professionali, scientifiche, tecniche, sanitarie, istruzione, finanza e assicurazioni",codes:["64","65","66","69","70","71","72","73","74","75","85","86","87","88"],kw:["consulen","avvocat","commercialist","ingegner","architett","geometra","psicolog","medic","fisioterap","infermier","formazion","insegnant","docen","traduttor","grafic","fotograf","marketing","design","ricerca","veterinar","nutrizion","coach","assicura","finanz","pubblicit","contabil"],gest:"separata"},
+ {id:"altre",coef:67,name:"Altre attività economiche",codes:["01","02","03","05","06","07","08","09","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32","33","35","36","37","38","39","49","50","51","52","53","58","59","60","61","62","63","77","78","79","80","81","82","84","90","91","92","93","94","95","96","97","98","99"],kw:["software","sviluppat","programmat","informatic","web","app","sito","musica","musicist","dj","artista","spettacol","video","scrittor","giornalist","estetist","parrucchier","fitness","personal trainer","pulizi","traspor","taxi","noleggio","eventi","social media","content creator","influencer","youtuber","sart","falegnam","meccanic","riparaz"],gest:"separata"}
+];
+const SHORT={alim:"Alimentari e bevande",comm:"Commercio",ambA:"Ambulante alimentari",ambB:"Ambulante altri prodotti",costr:"Edilizia e immobiliare",interm:"Agenti e rappresentanti",allog:"Alloggio e ristorazione",prof:"Professionisti e consulenti",altre:"Altre attività"};
+const CODES={"62.10":"Programmazione informatica","62.01":"Produzione di software","62.02":"Consulenza informatica","63.12":"Portali web","74.10":"Design e grafica","74.20":"Fotografia","69.20":"Contabilità e consulenza fiscale","70.22":"Consulenza aziendale","71.12":"Ingegneria","73.11":"Agenzie pubblicitarie","85.59":"Formazione","90.01":"Rappresentazioni artistiche","90.03":"Creazioni artistiche","96.02":"Parrucchieri ed estetisti","47.91":"Commercio online","46.19":"Agenti di commercio","43.21":"Impianti elettrici","43.22":"Impianti idraulici","56.10":"Ristoranti","55.20":"Affittacamere e B&B","86.90":"Professioni sanitarie","88.99":"Assistenza sociale"};
+
+const $=id=>document.getElementById(id);
+const fmt0=new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",maximumFractionDigits:0,useGrouping:"always"});
+const fmt2=new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR",minimumFractionDigits:2,maximumFractionDigits:2,useGrouping:"always"});
+const eur=n=>fmt0.format(Math.round(n)), eur2=n=>fmt2.format(n);
+const parseNum=s=>{s=String(s||"").trim().replace(/€|\s/g,"");if(!s)return NaN;if(s.includes(","))s=s.replace(/\./g,"").replace(",",".");else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,"");return Number(s)};
+const iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const NOWY=new Date().getFullYear();
+let year=NOWY, view="home", editing=null;
+
+let state={incassi:[],ateco:"altre",atecoLabel:"",gest:"separata",sgravio:false,nuova:false,dip:false,dip35:false,params:{...DEF_P}};
+function load(){try{const s=localStorage.getItem(KEY);if(s){const d=JSON.parse(s);state={...state,...d,params:{...DEF_P,...(d.params||{})}}}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){toast("Impossibile salvare: memoria del browser non disponibile")}}
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+
+const group=()=>GROUPS.find(g=>g.id===state.ateco)||GROUPS[GROUPS.length-1];
+function calc(F){
+  const p=state.params,g=group(),R=F*g.coef/100;let inps=0,fisso=0,ecc=0;
+  const sepRate=state.dip?p.sepr:p.sep;
+  if(state.gest==="separata")inps=R*sepRate/100;
+  else{const q=state.gest==="artigiani"?p.qa:p.qc,a=state.gest==="artigiani"?p.aa:p.ac,k=state.sgravio?0.65:1;fisso=q*k;ecc=Math.max(0,R-p.min)*a/100*k;inps=fisso+ecc}
+  const imp=Math.max(0,R-inps),ali=state.nuova?5:15,tax=imp*ali/100;
+  return{R,inps,fisso,ecc,imp,ali,tax,acc:inps+tax,net:F-inps-tax,coef:g.coef,sepRate}
+}
+function yearItems(){return state.incassi.filter(i=>(i.data||"").slice(0,4)===String(year)).sort((a,b)=>b.data.localeCompare(a.data)||b.ts-a.ts)}
+
+function nextDates(c){
+  const t=new Date();t.setHours(0,0,0,0);const y=t.getFullYear(),out=[];
+  const add=(d,what,amt)=>{if(d>=t)out.push({d,what,amt})};
+  [y,y+1].forEach(Y=>{
+    if(state.gest!=="separata")[[1,16,"4ª rata quota fissa "+(Y-1)],[4,16,"1ª rata quota fissa INPS"],[7,20,"2ª rata quota fissa INPS"],[10,16,"3ª rata quota fissa INPS"]].forEach(([m,d,w])=>add(new Date(Y,m,d),w,c.fisso/4));
+    add(new Date(Y,5,30),"Saldo "+(Y-1)+" e 1° acconto "+Y+" (imposta e contributi)",null);
+    add(new Date(Y,10,30),"2° acconto "+Y+" (imposta e contributi)",null);
+  });
+  return out.sort((a,b)=>a.d-b.d).slice(0,4)
+}
+
+function render(){
+  $("y-lbl").textContent=year;$("y2").textContent=year;$("y3").textContent=year;$("y-next").disabled=year>=NOWY+1;
+  const items=yearItems(),F=items.reduce((s,i)=>s+i.importo,0),c=calc(F);
+  $("tot").textContent=eur(F);$("tot2").textContent=eur(F);
+  $("fill").style.width=Math.min(100,F/USCITA*100)+"%";
+  const m=$("meter"),st=$("status");m.className="meter";
+  if(F>USCITA){m.classList.add("crit");st.className="status crit";st.innerHTML="Hai superato <b>100.000 €</b>: esci dal forfettario da subito e applichi l'IVA dall'operazione che ha fatto superare il limite. Parlane subito con il commercialista."}
+  else if(F>SOGLIA){m.classList.add("crit");st.className="status crit";st.innerHTML="Sopra gli <b>85.000 €</b>: resti forfettario quest'anno, ma dal "+(year+1)+" passi al regime ordinario. Margine prima dei 100.000 €: <b class='num'>"+eur(USCITA-F)+"</b>."}
+  else if(F>SOGLIA*0.85){m.classList.add("warn");st.className="status warn";st.innerHTML="Ti avvicini al tetto: restano <b class='num'>"+eur(SOGLIA-F)+"</b> prima degli 85.000 €."}
+  else{st.className="status ok";st.innerHTML="Restano <b class='num'>"+eur(SOGLIA-F)+"</b> prima della soglia di 85.000 €."}
+
+  $("r-acc").textContent=eur(c.acc);$("r-red").textContent=eur(c.R);$("r-inps").textContent=eur(c.inps);$("r-imp").textContent=eur(c.imp);
+  $("r-tax").textContent=eur(c.tax);$("r-net").textContent=eur(c.net);$("r-coef").textContent=c.coef+"%";$("r-ali").textContent=c.ali+"%";
+  const c2=calc(F+100);$("r-marg").textContent=eur2(c2.acc-c.acc);
+  const sp=$("split");sp.innerHTML="";
+  if(F>0){const parts=[[Math.max(0,c.net),"var(--accent)"],[c.inps,"var(--warn)"],[c.tax,"var(--crit)"]],tot=parts.reduce((s,p)=>s+p[0],0)||1;
+    parts.forEach(([v,col])=>{const s=document.createElement("span");s.style.width=(v/tot*100)+"%";s.style.background=col;sp.appendChild(s)})}
+
+  const p=state.params,dl=$("inps-detail");
+  if(state.gest==="separata")dl.innerHTML="<dt>Gestione</dt><dd>Separata</dd><dt>Aliquota sul reddito</dt><dd>"+String(c.sepRate).replace(".",",")+"%"+(state.dip?" (ridotta)":"")+"</dd><dt>Quota minima</dt><dd>Nessuna</dd><dt>Stima "+year+"</dt><dd>"+eur(c.inps)+"</dd>";
+  else dl.innerHTML="<dt>Gestione</dt><dd>"+(state.gest==="artigiani"?"Artigiani":"Commercianti")+(state.sgravio?" −35%":"")+"</dd><dt>Quota fissa annua</dt><dd>"+eur2(c.fisso)+"</dd><dt>In 4 rate da</dt><dd>"+eur2(c.fisso/4)+"</dd><dt>Oltre "+eur(p.min)+" di reddito</dt><dd>"+eur(c.ecc)+"</dd><dt>Stima "+year+"</dt><dd>"+eur(c.inps)+"</dd>";
+
+  const ul=$("dates");ul.innerHTML="";const now=new Date();
+  nextDates(c).forEach(x=>{const li=document.createElement("li"),days=Math.round((x.d-now)/864e5);
+    li.innerHTML="<div class='cal"+(days<=21?" soon":"")+"'><b></b><small></small></div><div class='what'></div><div class='amt'></div>";
+    li.querySelector("b").textContent=x.d.getDate();li.querySelector("small").textContent=x.d.toLocaleDateString("it-IT",{month:"short"})+(x.d.getFullYear()!==now.getFullYear()?" "+String(x.d.getFullYear()).slice(2):"");
+    li.querySelector(".what").textContent=x.what;li.querySelector(".amt").textContent=x.amt!=null?eur2(x.amt):"";ul.appendChild(li)});
+
+  const box=$("inc-list");box.innerHTML="";
+  if(!items.length){box.innerHTML="<div class='empty'><b>Nessun incasso nel "+year+"</b>Tocca + per aggiungere il primo.</div>"}
+  else{
+    const byM={};items.forEach(i=>{const k=i.data.slice(0,7);(byM[k]=byM[k]||[]).push(i)});
+    Object.keys(byM).sort().reverse().forEach(k=>{
+      const arr=byM[k],h=document.createElement("div");h.className="month";
+      const n=document.createElement("span");n.className="label";n.textContent=new Date(k+"-01T00:00").toLocaleDateString("it-IT",{month:"long"});
+      const t=document.createElement("span");t.className="num small muted";t.textContent=eur2(arr.reduce((s,i)=>s+i.importo,0));h.append(n,t);
+      const ul=document.createElement("ul");ul.className="list";
+      arr.forEach(i=>{const li=document.createElement("li");li.tabIndex=0;li.setAttribute("role","button");li.style.cursor="pointer";
+        li.innerHTML="<span class='d'></span><span class='c'></span><span class='v'></span>";
+        li.querySelector(".d").textContent=i.data.slice(8);li.querySelector(".c").textContent=i.cliente||"Senza cliente";li.querySelector(".v").textContent=eur2(i.importo);
+        const open=()=>openSheet(i);li.onclick=open;li.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}};ul.appendChild(li)});
+      box.append(h,ul)})
+  }
+
+  const gs=group();$("sum-act").textContent=(state.atecoLabel||gs.name)+" · "+gs.coef+"%";
+  $("sum-gest").textContent={separata:"Gestione separata",artigiani:"Artigiani",commercianti:"Commercianti"}[state.gest]+(state.sgravio?" −35%":"")+" · imposta "+(state.nuova?5:15)+"%";
+  $("sum-gest").textContent+=state.dip?" · dipendente":"";
+  const blocked=state.dip&&state.dip35;$("elig").hidden=!blocked;
+  $("elig").innerHTML="<b>Il forfettario non ti è accessibile.</b> Sei ancora dipendente e l'anno scorso hai superato 35.000 € di reddito da lavoro dipendente: serve il regime ordinario, quindi queste stime non valgono per te. Verifica con il commercialista.";
+  const dm=$("dip-msg");dm.hidden=!(state.dip||state.dip35);
+  if(blocked){dm.className="status crit";dm.innerHTML="<b>Forfettario non accessibile</b> finché resti dipendente: l'anno scorso hai superato i 35.000 €. Con la partita IVA serve il regime ordinario."}
+  else if(state.dip35){dm.className="status ok";dm.innerHTML="Hai superato i 35.000 €, ma il lavoro da dipendente è <b>terminato</b>: in questo caso la soglia non conta e puoi accedere al forfettario. Di norma il rapporto deve essersi chiuso entro il 31 dicembre dell'anno precedente: verifica le date con il commercialista."}
+  else if(state.dip){dm.className="status warn";dm.innerHTML="Puoi accedere al forfettario. Attenzione: se quest'anno il reddito da dipendente supera 35.000 € e il lavoro continua, dall'anno prossimo esci dal regime. E non puoi fatturare in prevalenza al tuo datore di lavoro attuale o a quelli degli ultimi due anni."}
+  const gd=$("gest-dip");gd.hidden=!state.dip;
+  gd.textContent=state.gest==="separata"?"Aliquota ridotta al "+String(state.params.sepr).replace(".",",")+"% perché hai già la copertura INPS da dipendente.":"Se il lavoro da dipendente è prevalente (ad esempio a tempo pieno), di solito l'iscrizione ad artigiani o commercianti non è dovuta. Per prudenza il calcolo la include: verifica con il commercialista.";
+  $("welcome").hidden=!!state.setupDone;$("att-done").textContent=state.setupDone?"Vai al riepilogo":"Continua: aggiungi i tuoi incassi";
+  const g=group();$("c-coef").textContent=g.coef+"%";$("c-grp").textContent=(state.atecoLabel&&state.atecoLabel!==g.name?state.atecoLabel+" · ":"")+g.name;
+  $("in-gest").value=state.gest;$("in-sgr").checked=state.sgravio;$("in-sgr").disabled=state.gest==="separata";$("in-new").checked=state.nuova;$("in-dip").checked=!!state.dip;$("in-dip35").checked=!!state.dip35;
+  ["sep","sepr","min","qa","qc","aa","ac"].forEach(k=>{const el=$("p-"+k);if(document.activeElement!==el)el.value=String(p[k]).replace(".",",")});
+}
+
+/* Tabs */
+function show(v){view=v;["home","inc","att"].forEach(x=>$("v-"+x).hidden=x!==v);
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.v===v)));
+  $("fab").hidden=v==="att";window.scrollTo(0,0)}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>show(b.dataset.v));
+$("y-prev").onclick=()=>{year--;render()};$("y-next").onclick=()=>{year++;render()};
+
+/* Sheet */
+function openSheet(item){
+  editing=item||null;$("err").hidden=true;
+  $("sh-title").textContent=item?"Modifica incasso":"Nuovo incasso";$("sh-save").textContent=item?"Salva modifiche":"Aggiungi";$("sh-del").hidden=!item;
+  $("in-imp").value=item?String(item.importo).replace(".",","):"";$("in-cli").value=item?item.cliente:"";
+  $("in-dat").value=item?item.data:(year===NOWY?iso(new Date()):year+"-01-01");
+  $("scrim").hidden=false;$("sheet").hidden=false;requestAnimationFrame(()=>{$("scrim").classList.add("on");$("sheet").classList.add("on")});
+  if(!item)setTimeout(()=>$("in-imp").focus(),260)
+}
+function closeSheet(){$("scrim").classList.remove("on");$("sheet").classList.remove("on");setTimeout(()=>{$("scrim").hidden=true;$("sheet").hidden=true},250);editing=null}
+$("fab").onclick=()=>openSheet();$("scrim").onclick=()=>{if(!$("ios-guide").hidden)closeGuide();else closeSheet()};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("sheet").hidden)closeSheet()});
+$("sheet").addEventListener("submit",e=>{e.preventDefault();
+  const v=parseNum($("in-imp").value),d=$("in-dat").value;
+  if(!(v>0)){$("err").textContent="Inserisci un importo maggiore di zero, ad esempio 1.500,00.";$("err").hidden=false;$("in-imp").focus();return}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){$("err").textContent="Scegli la data in cui hai ricevuto il pagamento.";$("err").hidden=false;return}
+  const rec={importo:Math.round(v*100)/100,cliente:$("in-cli").value.trim(),data:d};
+  if(editing)Object.assign(state.incassi.find(x=>x.id===editing.id),rec);
+  else state.incassi.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),ts:Date.now(),...rec});
+  const wasEdit=!!editing;year=+d.slice(0,4);save();render();closeSheet();toast(wasEdit?"Incasso aggiornato":"Incasso aggiunto")});
+let delArm=0;$("sh-del").onclick=()=>{
+  if(Date.now()-delArm>3000){delArm=Date.now();$("sh-del").textContent="Tocca di nuovo per eliminare";return}
+  const id=editing.id;state.incassi=state.incassi.filter(x=>x.id!==id);save();render();closeSheet();$("sh-del").textContent="Elimina incasso";delArm=0;toast("Incasso eliminato")};
+
+/* Attività */
+function findByCode(c){let best=null,len=0;GROUPS.forEach(g=>g.codes.forEach(k=>{if(c.startsWith(k)&&k.length>len){best=g;len=k.length}}));return best}
+function searchAteco(q){
+  q=q.trim().toLowerCase();const box=$("ateco-res");box.innerHTML="";if(q.length<2)return;
+  const res=[],code=q.replace(/[^\d.]/g,"");
+  if(/^\d/.test(q)&&code){Object.entries(CODES).forEach(([k,v])=>{if(k.startsWith(code.slice(0,5))||code.startsWith(k))res.push({label:k+" "+v,g:findByCode(k)})});
+    if(!res.length){const g=findByCode(code);if(g)res.push({label:"Codice "+code,g})}}
+  else{GROUPS.forEach(g=>{const hit=g.kw.find(k=>k.includes(q)||q.includes(k));if(hit)res.push({label:SHORT[g.id],g})});
+    Object.entries(CODES).forEach(([k,v])=>{if(v.toLowerCase().includes(q))res.push({label:k+" "+v,g:findByCode(k)})})}
+  const seen=new Set();res.filter(r=>r.g&&!seen.has(r.label)&&seen.add(r.label)).slice(0,5).forEach(r=>{
+    const b=document.createElement("button");b.type="button";b.className="opt";
+    const s=document.createElement("span");s.textContent=r.label;const c=document.createElement("b");c.textContent=r.g.coef+"%";b.append(s,c);
+    b.onclick=()=>{state.ateco=r.g.id;state.atecoLabel=r.label;state.gest=r.g.gest;$("gest-hint").hidden=false;if(r.g.gest==="separata")state.sgravio=false;box.innerHTML="";$("in-ateco").value="";save();render();toast("Attività impostata: coefficiente "+r.g.coef+"%")};
+    box.appendChild(b)});
+  if(!box.children.length)box.innerHTML="<p class='note'>Nessuna corrispondenza: prova con il codice ATECO o un'altra parola. Senza scelta si usa il 67%.</p>"
+}
+let st;$("in-ateco").addEventListener("input",e=>{clearTimeout(st);st=setTimeout(()=>searchAteco(e.target.value),120)});
+$("sum-edit").onclick=()=>show("att");
+$("att-done").onclick=()=>{const first=!state.setupDone;state.setupDone=true;save();render();show(first?"inc":"home");if(first)setTimeout(()=>openSheet(),350)};
+$("in-gest").onchange=e=>{$("gest-hint").hidden=true;state.gest=e.target.value;if(state.gest==="separata")state.sgravio=false;save();render()};
+$("in-sgr").onchange=e=>{state.sgravio=e.target.checked;save();render()};
+$("in-new").onchange=e=>{state.nuova=e.target.checked;save();render()};
+$("in-dip").onchange=e=>{state.dip=e.target.checked;save();render()};
+$("in-dip35").onchange=e=>{state.dip35=e.target.checked;save();render()};
+["sep","sepr","min","qa","qc","aa","ac"].forEach(k=>$("p-"+k).addEventListener("change",e=>{const v=parseNum(e.target.value);if(v>=0){state.params[k]=v;save()}render()}));
+$("p-reset").onclick=()=>{state.params={...DEF_P};save();render();toast("Parametri ripristinati")};
+
+/* Backup */
+$("b-exp").onclick=async()=>{
+  const name="forfy-backup-"+iso(new Date())+".json",blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  try{const file=new File([blob],name,{type:"application/json"});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Backup Forfy"});return}}catch(e){if(e&&e.name==="AbortError")return}
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
+$("b-imp").onclick=()=>$("f-imp").click();
+$("f-imp").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.incassi))throw 0;
+    const ids=new Set(state.incassi.map(i=>i.id));let n=0;d.incassi.forEach(i=>{if(i&&i.id&&!ids.has(i.id)&&i.importo>0&&/^\d{4}-\d{2}-\d{2}$/.test(i.data)){state.incassi.push(i);n++}});
+    ["ateco","atecoLabel","gest","sgravio","nuova"].forEach(k=>{if(k in d)state[k]=d[k]});if(d.params)state.params={...DEF_P,...d.params};["dip","dip35"].forEach(k=>{if(k in d)state[k]=!!d[k]});
+    save();render();toast("Backup importato: "+n+" incassi aggiunti")}catch(_){toast("Questo file non è un backup di Forfy")}e.target.value=""};r.readAsText(f)};
+let wipeArm=0;$("b-del").onclick=()=>{if(Date.now()-wipeArm>3000){wipeArm=Date.now();$("b-del").textContent="Tocca di nuovo per cancellare tutto";return}
+  state={incassi:[],ateco:"altre",atecoLabel:"",gest:"separata",sgravio:false,nuova:false,dip:false,dip35:false,params:{...DEF_P}};save();render();$("b-del").textContent="Cancella tutti i dati";wipeArm=0;toast("Dati cancellati")};
+
+/* Installazione */
+const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+const isMobile=isIOS||/android/i.test(navigator.userAgent);
+const inApp=/FBAN|FBAV|Instagram|Line\/|Telegram|LinkedInApp|GSA\//i.test(navigator.userAgent);
+let deferred=null,dismissed=false;try{dismissed=sessionStorage.getItem("forfy-inst-no")==="1"}catch(e){}
+function showInstall(){if(standalone||dismissed)return;$("install-bar").hidden=false}
+if(isIOS){$("install-txt").textContent=inApp?"Per installarla apri questo link in Safari.":"Su iPhone si aggiunge da Safari alla schermata Home: ti mostriamo come.";$("install-btn").textContent="Mostrami come";showInstall()}
+else if(isMobile)showInstall();
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;showInstall()});
+$("install-btn").onclick=async()=>{
+  if(deferred){deferred.prompt();const r=await deferred.userChoice;deferred=null;if(r.outcome==="accepted")$("install-bar").hidden=true;return}
+  if(isIOS){openGuide();return}
+  toast("Apri il menu ⋮ di Chrome e scegli «Installa app» o «Aggiungi a schermata Home»")};
+function openGuide(){const g=$("ios-guide");$("ig-inapp").hidden=!inApp;$("ig-url").value=location.origin+"/";
+  $("scrim").hidden=false;g.hidden=false;requestAnimationFrame(()=>{$("scrim").classList.add("on");g.classList.add("on")})}
+function closeGuide(){const g=$("ios-guide");$("scrim").classList.remove("on");g.classList.remove("on");setTimeout(()=>{$("scrim").hidden=true;g.hidden=true},250)}
+$("ig-ok").onclick=closeGuide;
+$("ig-copy").onclick=async()=>{const u=$("ig-url");try{await navigator.clipboard.writeText(u.value);toast("Link copiato: incollalo in Safari")}catch(e){u.select();toast("Tieni premuto sul link per copiarlo")}};
+$("install-no").onclick=()=>{$("install-bar").hidden=true;try{sessionStorage.setItem("forfy-inst-no","1")}catch(e){}};
+window.addEventListener("appinstalled",()=>{$("install-bar").hidden=true;toast("Forfy installata")});
+if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+
+load();if(!state.setupDone&&state.incassi.length)state.setupDone=true;render();show(state.setupDone?"home":"att");
+})();
+</script>
+</body>
+</html>
