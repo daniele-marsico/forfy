@@ -1,8 +1,11 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "it.controllinghub.forfy",
-        "sha256_cert_fingerprints": ["B0:DB:3D:DE:09:89:06:07:A1:8E:6A:B6:51:59:F5:C9:B2:CE:CD:BC:00:83:19:AF:BF:3D:68:61:98:DE:36:15"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "it.controllinghub.forfy",
+    "sha256_cert_fingerprints": [
+      "8D:80:D4:8B:07:A4:10:54:DC:D1:B8:FF:C5:8C:7C:52:4C:55:63:9E:D9:F4:69:0C:3F:8F:94:5F:3C:A6:4D:04",
+      "3F:07:15:8D:45:BA:8D:E9:38:F5:82:66:D5:AD:DB:9D:EA:DC:42:EC:49:85:0F:11:00:64:AB:A9:B0:1B:95:1C"
+    ]
+  }
+}]
