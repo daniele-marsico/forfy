@@ -1,0 +1,244 @@
+[
+ {
+  "slug": "sviluppatore-software",
+  "nome": "sviluppatore software",
+  "titolo": "Sviluppatore software",
+  "ateco": "62.10",
+  "atecoDesc": "Programmazione informatica",
+  "grp": "altre",
+  "gest": "separata",
+  "clienti": "aziende, agenzie e startup"
+ },
+ {
+  "slug": "consulente-informatico",
+  "nome": "consulente informatico",
+  "titolo": "Consulente informatico",
+  "ateco": "62.20",
+  "atecoDesc": "Consulenza informatica e gestione di sistemi",
+  "grp": "altre",
+  "gest": "separata",
+  "clienti": "PMI e software house"
+ },
+ {
+  "slug": "web-designer",
+  "nome": "web designer",
+  "titolo": "Web designer",
+  "ateco": "74.12",
+  "atecoDesc": "Design grafico e di comunicazione visiva",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "piccole aziende e professionisti"
+ },
+ {
+  "slug": "grafico",
+  "nome": "grafico",
+  "titolo": "Grafico",
+  "ateco": "74.12",
+  "atecoDesc": "Design grafico e di comunicazione visiva",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "agenzie e brand"
+ },
+ {
+  "slug": "fotografo",
+  "nome": "fotografo",
+  "titolo": "Fotografo",
+  "ateco": "74.20",
+  "atecoDesc": "Attività fotografiche",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "privati, aziende ed eventi"
+ },
+ {
+  "slug": "videomaker",
+  "nome": "videomaker",
+  "titolo": "Videomaker",
+  "ateco": "59.11",
+  "atecoDesc": "Produzione cinematografica, video e programmi TV",
+  "grp": "altre",
+  "gest": "separata",
+  "clienti": "aziende, agenzie ed eventi"
+ },
+ {
+  "slug": "social-media-manager",
+  "nome": "social media manager",
+  "titolo": "Social media manager",
+  "ateco": "73.11",
+  "atecoDesc": "Attività delle agenzie pubblicitarie",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "negozi, ristoranti e brand"
+ },
+ {
+  "slug": "consulente-marketing",
+  "nome": "consulente marketing",
+  "titolo": "Consulente marketing",
+  "ateco": "70.20",
+  "atecoDesc": "Consulenza gestionale",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "PMI e startup"
+ },
+ {
+  "slug": "copywriter",
+  "nome": "copywriter",
+  "titolo": "Copywriter",
+  "ateco": "74.99",
+  "atecoDesc": "Altre attività professionali n.c.a.",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "agenzie, e-commerce e aziende"
+ },
+ {
+  "slug": "traduttore",
+  "nome": "traduttore",
+  "titolo": "Traduttore",
+  "ateco": "74.30",
+  "atecoDesc": "Traduzione e interpretariato",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "agenzie di traduzione e aziende"
+ },
+ {
+  "slug": "consulente-aziendale",
+  "nome": "consulente aziendale",
+  "titolo": "Consulente aziendale",
+  "ateco": "70.20",
+  "atecoDesc": "Consulenza gestionale",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "PMI"
+ },
+ {
+  "slug": "formatore",
+  "nome": "formatore",
+  "titolo": "Formatore",
+  "ateco": "85.59",
+  "atecoDesc": "Altri servizi di istruzione n.c.a.",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "aziende ed enti di formazione"
+ },
+ {
+  "slug": "personal-trainer",
+  "nome": "personal trainer",
+  "titolo": "Personal trainer",
+  "ateco": "85.51",
+  "atecoDesc": "Istruzione sportiva e ricreativa",
+  "grp": "prof",
+  "gest": "separata",
+  "clienti": "privati e palestre"
+ },
+ {
+  "slug": "estetista",
+  "nome": "estetista",
+  "titolo": "Estetista",
+  "ateco": "96.22",
+  "atecoDesc": "Servizi degli istituti di bellezza",
+  "grp": "altre",
+  "gest": "artigiani",
+  "clienti": "privati"
+ },
+ {
+  "slug": "parrucchiere",
+  "nome": "parrucchiere",
+  "titolo": "Parrucchiere",
+  "ateco": "96.21",
+  "atecoDesc": "Servizi dei parrucchieri e barbieri",
+  "grp": "altre",
+  "gest": "artigiani",
+  "clienti": "privati"
+ },
+ {
+  "slug": "idraulico",
+  "nome": "idraulico",
+  "titolo": "Idraulico",
+  "ateco": "43.22",
+  "atecoDesc": "Installazione di impianti idraulici e di riscaldamento",
+  "grp": "costr",
+  "gest": "artigiani",
+  "clienti": "privati e condomini"
+ },
+ {
+  "slug": "elettricista",
+  "nome": "elettricista",
+  "titolo": "Elettricista",
+  "ateco": "43.21",
+  "atecoDesc": "Installazione di impianti elettrici",
+  "grp": "costr",
+  "gest": "artigiani",
+  "clienti": "privati e imprese edili"
+ },
+ {
+  "slug": "imbianchino",
+  "nome": "imbianchino",
+  "titolo": "Imbianchino",
+  "ateco": "43.34",
+  "atecoDesc": "Tinteggiatura e posa in opera di vetri",
+  "grp": "costr",
+  "gest": "artigiani",
+  "clienti": "privati e condomini"
+ },
+ {
+  "slug": "falegname",
+  "nome": "falegname",
+  "titolo": "Falegname",
+  "ateco": "16.23",
+  "atecoDesc": "Fabbricazione di altri prodotti di carpenteria in legno",
+  "grp": "altre",
+  "gest": "artigiani",
+  "clienti": "privati e imprese"
+ },
+ {
+  "slug": "impresa-di-pulizie",
+  "nome": "impresa di pulizie",
+  "titolo": "Impresa di pulizie",
+  "ateco": "81.21",
+  "atecoDesc": "Pulizia generale di edifici",
+  "grp": "altre",
+  "gest": "artigiani",
+  "clienti": "uffici, condomini e privati"
+ },
+ {
+  "slug": "agente-di-commercio",
+  "nome": "agente di commercio",
+  "titolo": "Agente di commercio",
+  "ateco": "46.19",
+  "atecoDesc": "Intermediari del commercio di vari prodotti",
+  "grp": "interm",
+  "gest": "commercianti",
+  "clienti": "aziende mandanti",
+  "nota": "Oltre all'INPS commercianti, l'agente di commercio versa i contributi ENASARCO, trattenuti in parte dalla mandante: non sono inclusi in questo calcolo."
+ },
+ {
+  "slug": "e-commerce",
+  "nome": "e-commerce",
+  "titolo": "E-commerce",
+  "ateco": "47",
+  "atecoDesc": "Commercio al dettaglio (anche online)",
+  "grp": "comm",
+  "gest": "commercianti",
+  "clienti": "privati online"
+ },
+ {
+  "slug": "bed-and-breakfast",
+  "nome": "B&B e affittacamere",
+  "titolo": "B&B e affittacamere",
+  "ateco": "55.20",
+  "atecoDesc": "Alloggi per vacanze e altre strutture per brevi soggiorni",
+  "grp": "allog",
+  "gest": "commercianti",
+  "clienti": "turisti",
+  "nota": "Un B&B gestito in forma non imprenditoriale (occasionale, senza partita IVA) segue regole diverse e regionali: questo calcolo vale solo se apri la partita IVA."
+ },
+ {
+  "slug": "negozio",
+  "nome": "negoziante",
+  "titolo": "Negozio al dettaglio",
+  "ateco": "47",
+  "atecoDesc": "Commercio al dettaglio",
+  "grp": "comm",
+  "gest": "commercianti",
+  "clienti": "privati"
+ }
+]

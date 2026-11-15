@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://forfy.controllinghub.com/sitemap.xml

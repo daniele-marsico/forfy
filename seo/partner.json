@@ -1,0 +1,8 @@
+{
+  "_nota": "Incolla qui i link referral quando i programmi ti approvano, poi rilancia: node seo/build.mjs. Un partner con url vuoto non viene mostrato.",
+  "partner": [
+    {"id":"fiscozen","nome":"Fiscozen","cat":"Commercialista online","testo":"Commercialista dedicato per forfettari: apertura partita IVA, F24 e dichiarazione.","url":""},
+    {"id":"qonto","nome":"Qonto","cat":"Conto business","testo":"Conto per partite IVA con IBAN italiano, carte e fatturazione integrata.","url":""},
+    {"id":"finom","nome":"Finom","cat":"Conto business","testo":"Conto aziendale con IBAN italiano, fatture elettroniche e cashback sulle carte.","url":""}
+  ]
+}
