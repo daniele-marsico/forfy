@@ -1,4 +1,4 @@
-// Genera le pagine SEO statiche di Forfy: node seo/build.mjs
+// Genera le pagine SEO statiche di Forfettix: node seo/build.mjs
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -39,7 +39,7 @@ function calc(F, coef, gest, ali = 15) {
 
 function partnerBlock() {
   if (!partners.length) return "";
-  return `<section class="card partners"><h2>Strumenti utili per la tua partita IVA</h2><p class="muted small">Link di affiliazione: se ti iscrivi, Forfy può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.cat)}</span></a><span>${esc(p.testo)}</span></li>`).join("")}</ul></section>`;
+  return `<section class="card partners"><h2>Strumenti utili per la tua partita IVA</h2><p class="muted small">Link di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.cat)}</span></a><span>${esc(p.testo)}</span></li>`).join("")}</ul></section>`;
 }
 
 function shell({ title, desc, path, body, jsonld }) {
@@ -58,12 +58,12 @@ function shell({ title, desc, path, body, jsonld }) {
 ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Forf<span>y</span></a><nav><a href="/tasse-forfettario/">Guide per professione</a><a class="btn sm" href="/">Apri l'app</a></nav></header>
+<header class="top"><a class="brand" href="/">Forfetti<span>x</span></a><nav><a href="/tasse-forfettario/">Guide per professione</a><a class="btn sm" href="/">Apri l'app</a></nav></header>
 <main>
 ${body}
 <p class="disc">Stima indicativa con valori ${YEAR} (imposta sostitutiva, coefficienti, aliquote e quote INPS): non è consulenza fiscale. I codici ATECO sono esempi: verifica il tuo nel certificato di attribuzione della partita IVA e chiedi conferma al tuo commercialista.</p>
 </main>
-<footer><a href="/">Forfy</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
+<footer><a href="/">Forfettix</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
 <script src="/assets/calc.js" defer></script>
 </body>
 </html>
@@ -88,7 +88,7 @@ function page(x) {
     [`Qual è il limite di incassi per restare forfettario?`, `85.000 € l'anno. Se li superi, dall'anno dopo passi al regime ordinario; se superi 100.000 € esci subito, già nell'anno in corso.`],
   ];
   const body = `
-<nav class="crumbs"><a href="/">Forfy</a> › <a href="/tasse-forfettario/">Tasse forfettario</a> › ${esc(x.titolo)}</nav>
+<nav class="crumbs"><a href="/">Forfettix</a> › <a href="/tasse-forfettario/">Tasse forfettario</a> › ${esc(x.titolo)}</nav>
 <h1>Tasse ${esc(x.nome)} in regime forfettario: quanto si paga nel ${YEAR}</h1>
 <p class="lead">Se lavori come ${esc(x.nome)} con clienti come ${esc(x.clienti)}, nel forfettario le tasse dipendono da tre cose: quanto incassi, il <b>coefficiente di redditività del ${coef}%</b> e la gestione INPS. Qui trovi il calcolo già impostato per la tua attività.</p>
 
@@ -105,7 +105,7 @@ function page(x) {
     <dt class="tot">Netto stimato</dt><dd class="tot" id="o-net">–</dd>
   </dl>
   <p class="muted small" id="o-msg"></p>
-  <a class="btn" href="/?source=guida-${x.slug}">Tieni traccia degli incassi con Forfy</a>
+  <a class="btn" href="/?source=guida-${x.slug}">Tieni traccia degli incassi con Forfettix</a>
   <p class="muted small center">Gratis, senza registrazione: i dati restano sul tuo telefono.</p>
 </section>
 
@@ -124,7 +124,7 @@ ${x.nota ? `<p class="note">${esc(x.nota)}</p>` : ""}
 <p>In pratica, su ogni 100 € che incassi come ${esc(x.nome)} conviene mettere da parte circa <b>${eur((e30.inps + e30.tax) / 300)}</b> per tasse e contributi (calcolo su 30.000 € di incassi).</p>
 
 <h2>Il tetto degli 85.000 €</h2>
-<p>Il forfettario vale finché gli incassi dell'anno restano entro 85.000 €. Conviene controllare l'andamento durante l'anno, non a dicembre: Forfy ti mostra quanto manca alla soglia ogni volta che registri un incasso.</p>
+<p>Il forfettario vale finché gli incassi dell'anno restano entro 85.000 €. Conviene controllare l'andamento durante l'anno, non a dicembre: Forfettix ti mostra quanto manca alla soglia ogni volta che registri un incasso.</p>
 
 ${partnerBlock()}
 
@@ -137,7 +137,7 @@ ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></de
   const jsonld = [
     { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) },
     { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Forfy", item: BASE + "/" },
+      { "@type": "ListItem", position: 1, name: "Forfettix", item: BASE + "/" },
       { "@type": "ListItem", position: 2, name: "Tasse forfettario", item: BASE + "/tasse-forfettario/" },
       { "@type": "ListItem", position: 3, name: x.titolo, item: BASE + path } ] },
   ];
@@ -154,11 +154,11 @@ function hub() {
 ${Object.entries(byG).map(([k, list]) => `<h2>${GEST[k]}</h2><ul class="grid">${list.map(x => `<li><a href="/tasse-forfettario/${x.slug}/"><b>${esc(x.titolo)}</b><span>Coefficiente ${GROUPS[x.grp].coef}%</span></a></li>`).join("")}</ul>`).join("\n")}
 <section class="card"><h2>Come si calcolano le tasse nel forfettario</h2>
 <ol><li>Incassi × coefficiente di redditività = reddito forfettario.</li><li>Dal reddito togli i contributi INPS versati.</li><li>Sul resto paghi l'imposta sostitutiva: 15%, oppure 5% per i primi cinque anni se hai i requisiti.</li></ol>
-<a class="btn" href="/?source=guida-hub">Calcola con Forfy</a></section>
+<a class="btn" href="/?source=guida-hub">Calcola con Forfettix</a></section>
 ${partnerBlock()}
 `;
   const jsonld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tasse forfettario per professione", url: BASE + path }];
-  return { path, html: shell({ title: `Tasse forfettario ${YEAR} per professione: calcolo ed esempi | Forfy`, desc: `Calcolo di tasse e contributi INPS nel regime forfettario ${YEAR} per ${prof.length} professioni: coefficienti, esempi e calcolatore gratuito.`, path, body, jsonld }) };
+  return { path, html: shell({ title: `Tasse forfettario ${YEAR} per professione: calcolo ed esempi | Forfettix`, desc: `Calcolo di tasse e contributi INPS nel regime forfettario ${YEAR} per ${prof.length} professioni: coefficienti, esempi e calcolatore gratuito.`, path, body, jsonld }) };
 }
 
 // Scrittura

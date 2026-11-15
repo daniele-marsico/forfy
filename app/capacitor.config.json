@@ -1,6 +1,6 @@
 {
   "appId": "it.controllinghub.forfy",
-  "appName": "Forfy",
+  "appName": "Forfettix",
   "webDir": "www",
   "android": { "backgroundColor": "#f3f5f4" },
   "plugins": {

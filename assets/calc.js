@@ -1,4 +1,4 @@
-// Calcolatore delle pagine guida: stessa formula e stessi parametri dell'app Forfy
+// Calcolatore delle pagine guida: stessa formula e stessi parametri dell'app Forfettix
 (function () {
   var box = document.querySelector(".calc[data-coef]");
   if (!box) return;

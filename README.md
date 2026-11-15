@@ -1,4 +1,4 @@
-# Forfy
+# Forfettix
 
 Free PWA that estimates taxes and INPS contributions for Italian *partita IVA forfettaria* freelancers.
 
