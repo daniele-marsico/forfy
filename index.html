@@ -558,6 +558,10 @@ $("p-reset").onclick=()=>{state.params={...DEF_P};save();render();toast("Paramet
 /* Backup */
 $("b-exp").onclick=async()=>{
   const name="forfy-backup-"+iso(new Date())+".json",blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  // App Android nativa: il file si salva con il foglio di condivisione (Drive, Download, email…)
+  const C=window.Capacitor;if(C&&C.isNativePlatform&&C.isNativePlatform()&&C.Plugins.Filesystem&&C.Plugins.Share){
+    try{const w=await C.Plugins.Filesystem.writeFile({path:name,data:JSON.stringify(state,null,2),directory:"CACHE",encoding:"utf8"});
+      await C.Plugins.Share.share({title:"Backup Forfy",files:[w.uri]})}catch(e){}return}
   try{const file=new File([blob],name,{type:"application/json"});
     if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Backup Forfy"});return}}catch(e){if(e&&e.name==="AbortError")return}
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};

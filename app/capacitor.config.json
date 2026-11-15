@@ -1,0 +1,10 @@
+{
+  "appId": "it.controllinghub.forfy",
+  "appName": "Forfy",
+  "webDir": "www",
+  "android": { "backgroundColor": "#f3f5f4" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 600, "backgroundColor": "#0d6e57", "showSpinner": false },
+    "StatusBar": { "backgroundColor": "#0d6e57", "style": "DARK" }
+  }
+}

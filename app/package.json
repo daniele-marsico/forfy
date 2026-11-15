@@ -1,0 +1,22 @@
+{
+  "name": "forfy-app",
+  "private": true,
+  "version": "2.0.0",
+  "description": "App Android di Forfy: guscio Capacitor nativo con il sito incluso (funziona offline, niente Chrome)",
+  "scripts": {
+    "www": "node copy-www.mjs",
+    "sync": "node copy-www.mjs && cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.2"
+  }
+}
