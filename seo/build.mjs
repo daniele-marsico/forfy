@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const BASE = "https://forfy.controllinghub.com";
+const BASE = "https://forfettix.controllinghub.com";
 const YEAR = 2026;
 const TODAY = new Date().toISOString().slice(0, 10);
 

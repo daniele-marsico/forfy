@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://forfy.controllinghub.com/sitemap.xml
+Sitemap: https://forfettix.controllinghub.com/sitemap.xml

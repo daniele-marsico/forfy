@@ -1,8 +1,8 @@
-// Un solo indirizzo ufficiale per Google: forfy.controllinghub.com
-// - Le guide su forfy.pages.dev e sulle anteprime (<hash>.forfy.pages.dev) vengono reindirizzate (301).
+// Un solo indirizzo ufficiale per Google: forfettix.controllinghub.com (ex forfy.controllinghub.com)
+// - Le guide su forfy.controllinghub.com, forfy.pages.dev e sulle anteprime (<hash>.forfy.pages.dev) vengono reindirizzate (301).
 // - L'app su altri indirizzi resta raggiungibile (chi la usa lì ha i dati salvati in quel browser),
 //   ma viene marcata noindex così Google non la mostra come duplicato.
-const CANONICAL = "forfy.controllinghub.com";
+const CANONICAL = "forfettix.controllinghub.com";
 
 export async function onRequest({ request, next }) {
   const url = new URL(request.url);
