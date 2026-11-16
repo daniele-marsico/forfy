@@ -2,9 +2,22 @@
   "appId": "it.controllinghub.forfy",
   "appName": "Forfettix",
   "webDir": "www",
-  "android": { "backgroundColor": "#f3f5f4" },
+  "android": {
+    "backgroundColor": "#f3f5f4"
+  },
   "plugins": {
-    "SplashScreen": { "launchShowDuration": 600, "backgroundColor": "#0d6e57", "showSpinner": false },
-    "StatusBar": { "backgroundColor": "#0d6e57", "style": "DARK" }
+    "SplashScreen": {
+      "launchShowDuration": 600,
+      "backgroundColor": "#0d6e57",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "backgroundColor": "#0d6e57",
+      "style": "DARK"
+    }
+  },
+  "ios": {
+    "backgroundColor": "#f3f5f4",
+    "contentInset": "never"
   }
 }
