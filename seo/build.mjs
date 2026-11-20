@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { kitPages } from "./kit.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = "https://forfettix.controllinghub.com";
@@ -22,7 +23,9 @@ const GROUPS = {
 const GEST = { separata: "Gestione separata INPS", artigiani: "Gestione artigiani INPS", commercianti: "Gestione commercianti INPS" };
 
 const prof = JSON.parse(readFileSync(join(ROOT, "seo/professioni.json"), "utf8"));
-const partners = JSON.parse(readFileSync(join(ROOT, "seo/partner.json"), "utf8")).partner.filter(p => p.url);
+const partnerCfg = JSON.parse(readFileSync(join(ROOT, "seo/partner.json"), "utf8"));
+const allPartners = partnerCfg.partner;
+const partners = allPartners.filter(p => p.url);
 
 const eur = n => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" }).format(Math.round(n));
 const pct = n => String(n).replace(".", ",") + "%";
@@ -37,9 +40,13 @@ function calc(F, coef, gest, ali = 15) {
   return { R, inps, imp, tax, net: F - inps - tax };
 }
 
-function partnerBlock() {
-  if (!partners.length) return "";
-  return `<section class="card partners"><h2>Strumenti utili per la tua partita IVA</h2><p class="muted small">Link di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.cat)}</span></a><span>${esc(p.testo)}</span></li>`).join("")}</ul></section>`;
+function partnerBlock(src = "guida") {
+  const list = partners.length ? `<p class="muted small">Link di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.etichetta)}</span></a><span>${esc(p.testo)}</span>${p.promo ? `<span class="promo">${esc(p.promo)}</span>` : ""}</li>`).join("")}</ul>` : "";
+  return `<section class="card partners"><h2>Strumenti utili per la tua partita IVA</h2>
+<p>Commercialista, conto, assicurazione: <b>scopri in 60 secondi cosa ti manca</b> con il check-up gratuito.</p>
+<a class="btn" href="/check-up-partita-iva/?source=${src}">Fai il check-up partita IVA</a>
+${list}
+<p class="small"><a href="/commercialista-online-forfettario/">Commercialista online: prezzi a confronto</a> · <a href="/conto-business-partita-iva/">Conto business</a> · <a href="/assicurazione-rc-professionale-freelance/">RC professionale</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire la partita IVA</a></p></section>`;
 }
 
 function shell({ title, desc, path, body, jsonld }) {
@@ -58,12 +65,12 @@ function shell({ title, desc, path, body, jsonld }) {
 ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</script>`).join("\n")}
 </head>
 <body>
-<header class="top"><a class="brand" href="/">Forfetti<span>x</span></a><nav><a href="/tasse-forfettario/">Guide per professione</a><a class="btn sm" href="/">Apri l'app</a></nav></header>
+<header class="top"><a class="brand" href="/">Forfetti<span>x</span></a><nav><a href="/tasse-forfettario/">Guide</a><a href="/check-up-partita-iva/">Check-up</a><a class="btn sm" href="/">Apri l'app</a></nav></header>
 <main>
 ${body}
 <p class="disc">Stima indicativa con valori ${YEAR} (imposta sostitutiva, coefficienti, aliquote e quote INPS): non è consulenza fiscale. I codici ATECO sono esempi: verifica il tuo nel certificato di attribuzione della partita IVA e chiedi conferma al tuo commercialista.</p>
 </main>
-<footer><a href="/">Forfettix</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
+<footer><a href="/">Forfettix</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/check-up-partita-iva/">Check-up partita IVA</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire partita IVA</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
 <script src="/assets/calc.js" defer></script>
 </body>
 </html>
@@ -126,7 +133,7 @@ ${x.nota ? `<p class="note">${esc(x.nota)}</p>` : ""}
 <h2>Il tetto degli 85.000 €</h2>
 <p>Il forfettario vale finché gli incassi dell'anno restano entro 85.000 €. Conviene controllare l'andamento durante l'anno, non a dicembre: Forfettix ti mostra quanto manca alla soglia ogni volta che registri un incasso.</p>
 
-${partnerBlock()}
+${partnerBlock("guida-" + x.slug)}
 
 <h2>Domande frequenti</h2>
 ${faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("\n")}
@@ -155,7 +162,7 @@ ${Object.entries(byG).map(([k, list]) => `<h2>${GEST[k]}</h2><ul class="grid">${
 <section class="card"><h2>Come si calcolano le tasse nel forfettario</h2>
 <ol><li>Incassi × coefficiente di redditività = reddito forfettario.</li><li>Dal reddito togli i contributi INPS versati.</li><li>Sul resto paghi l'imposta sostitutiva: 15%, oppure 5% per i primi cinque anni se hai i requisiti.</li></ol>
 <a class="btn" href="/?source=guida-hub">Calcola con Forfettix</a></section>
-${partnerBlock()}
+${partnerBlock("guida-hub")}
 `;
   const jsonld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tasse forfettario per professione", url: BASE + path }];
   return { path, html: shell({ title: `Tasse forfettario ${YEAR} per professione: calcolo ed esempi | Forfettix`, desc: `Calcolo di tasse e contributi INPS nel regime forfettario ${YEAR} per ${prof.length} professioni: coefficienti, esempi e calcolatore gratuito.`, path, body, jsonld }) };
@@ -164,7 +171,8 @@ ${partnerBlock()}
 // Scrittura
 const outDir = join(ROOT, "tasse-forfettario");
 if (existsSync(outDir)) rmSync(outDir, { recursive: true });
-const pages = [hub(), ...prof.map(page)];
+const kit = kitPages({ shell, esc, eur, calc, P, BASE, allPartners, verificati: partnerCfg.verificati });
+const pages = [hub(), ...prof.map(page), ...kit];
 for (const p of pages) { const f = join(ROOT, p.path, "index.html"); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, p.html); }
 
 const urls = ["/", ...pages.map(p => p.path)];
