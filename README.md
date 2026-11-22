@@ -4,7 +4,7 @@ Free PWA that estimates taxes and INPS contributions for Italian *partita IVA fo
 
 - Live: https://forfy.pages.dev
 - Hosting: Cloudflare Pages, deployed automatically from this repository (branch `main`)
-- Android: Trusted Web Activity, package `it.controllinghub.forfy` (`.well-known/assetlinks.json`)
+- Android: app nativa Capacitor (cartella `app/`, sito incluso, niente Chrome), package `it.controllinghub.forfy`. Ogni build va nel test interno e nei test chiusi attivi (`.github/workflows/android.yml`); a mano: Actions → "Play Store - porta build nel test chiuso"
 
 ## Pagine strumenti e affiliazioni (nov 2026)
 

@@ -3,7 +3,7 @@
 # Il sito è incluso nell'app (funziona offline): si ricompila a ogni modifica del sito o di app/ (o a mano da Actions → Run workflow):
 #  1. compila l'AAB con numero di versione automatico (100 + numero della build, più alto della vecchia TWA)
 #  2. lo firma con la stessa chiave della TWA (stessi segreti): per Play è un normale aggiornamento
-#  3. lo pubblica direttamente nel test "internal" (i tester lo ricevono dopo la revisione di Google)
+#  3. lo pubblica nel test "internal" e poi nei test chiusi attivi (i tester lo ricevono dopo la revisione di Google)
 # Segreti: TWA_KEYSTORE_B64, TWA_KEYSTORE_PASSWORD, TWA_KEY_ALIAS, TWA_KEY_PASSWORD, PLAY_SERVICE_ACCOUNT_JSON
 name: Android Forfy (nativa)
 on:
@@ -65,3 +65,15 @@ jobs:
           releaseFiles: out/Forfy-${{ env.VERSION_CODE }}.aab
           track: internal
           status: completed
+      # i tester stanno nel test chiuso: la stessa build va anche lì, altrimenti restano sulla versione vecchia
+      - uses: actions/setup-python@v5
+        if: steps.playcheck.outputs.go == 'true'
+        with: { python-version: "3.12" }
+      - name: Porta la build anche nel test chiuso
+        if: steps.playcheck.outputs.go == 'true'
+        continue-on-error: true
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PKG: it.controllinghub.forfy
+          TARGET: auto
+        run: pip install -q google-api-python-client google-auth && python .github/scripts/play_promote.py

@@ -1,0 +1,23 @@
+# Porta l'ultima build del test interno nel test chiuso (quello dei tester), da Actions -> Run workflow
+name: Play Store - porta build nel test chiuso
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Track di destinazione: auto (tutti i test attivi) oppure nome, es. alpha"
+        required: true
+        default: "auto"
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install google-api-python-client google-auth
+      - name: Promuovi
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PKG: it.controllinghub.forfy
+          TARGET: ${{ inputs.target }}
+        run: python .github/scripts/play_promote.py
