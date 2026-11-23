@@ -1,11 +1,60 @@
 {
-  "_nota": "Incolla in 'url' il link di tracciamento financeAds quando arriva, poi rilancia: node seo/build.mjs. Un partner con url vuoto resta nelle pagine come informazione, ma senza pulsante. 'promo' compare solo se c'è il link (lo sconto Fiscozen vale solo dal link di tracciamento). Prezzi verificati sui siti ufficiali il 20/11/2026.",
-  "verificati": "20 novembre 2026",
-  "partner": [
-    {"id":"fiscozen","nome":"Fiscozen","cat":"commercialista","etichetta":"Commercialista online","testo":"Commercialista dedicato, app per le fatture, dichiarazione dei redditi e F24. L'apertura della partita IVA è inclusa nell'abbonamento.","prezzo":"da 49,90 €/mese o 499 €/anno IVA inclusa per i professionisti; 59,90 €/mese o 599 €/anno per artigiani e commercianti","anno_prof":499,"anno_art":599,"promo":"50 € di sconto sulla consulenza, applicato in automatico dal link","url":""},
-    {"id":"flextax","nome":"FlexTax","cat":"commercialista","etichetta":"Commercialista online","testo":"Piano Freemium gratuito per iniziare (simulatori e ticket di assistenza fiscale). Con il piano Plus gestiscono contabilità, F24 e dichiarazione, anche dall'apertura della partita IVA.","prezzo":"Freemium gratis; Plus 366 €/anno IVA inclusa per i professionisti, 399 € per artigiani e commercianti","anno_prof":366,"anno_art":399,"promo":"","url":""},
-    {"id":"qonto","nome":"Qonto","cat":"conto","etichetta":"Conto business","testo":"Conto online con IBAN italiano, carte, fatturazione integrata e sotto-conti per mettere da parte le tasse.","prezzo":"da 9 €/mese + IVA con piano annuale, primo mese di prova gratuito","promo":"","url":""},
-    {"id":"finom","nome":"Finom","cat":"conto","etichetta":"Conto business","testo":"Conto aziendale con IBAN italiano e fatture elettroniche.","prezzo":"","promo":"","url":""},
-    {"id":"lokky","nome":"Lokky","cat":"assicurazione","etichetta":"RC professionale","testo":"Broker assicurativo digitale per micro-imprese, professionisti e freelance: preventivo e polizza online.","prezzo":"preventivo online in pochi minuti","promo":"","url":""}
-  ]
+ "_nota": "Incolla in 'url' il link di tracciamento financeAds quando arriva, poi rilancia: node seo/build.mjs. Un partner con url vuoto resta nelle pagine come informazione, ma senza pulsante. 'promo' compare solo se c'è il link (lo sconto Fiscozen vale solo dal link di tracciamento). Prezzi verificati sui siti ufficiali il 20/11/2026.",
+ "verificati": "20 novembre 2026",
+ "partner": [
+  {
+   "id": "fiscozen",
+   "nome": "Fiscozen",
+   "cat": "commercialista",
+   "etichetta": "Commercialista online",
+   "testo": "Commercialista dedicato, app per le fatture, dichiarazione dei redditi e F24. L'apertura della partita IVA è inclusa nell'abbonamento.",
+   "prezzo": "da 49,90 €/mese o 499 €/anno IVA inclusa per i professionisti; 59,90 €/mese o 599 €/anno per artigiani e commercianti",
+   "anno_prof": 499,
+   "anno_art": 599,
+   "promo": "50 € di sconto sulla consulenza, applicato in automatico dal link",
+   "url": ""
+  },
+  {
+   "id": "flextax",
+   "nome": "FlexTax",
+   "cat": "commercialista",
+   "etichetta": "Commercialista online",
+   "testo": "Piano Freemium gratuito per iniziare (simulatori e ticket di assistenza fiscale). Con il piano Plus gestiscono contabilità, F24 e dichiarazione, anche dall'apertura della partita IVA. Non segue società, vendita di alimenti o di auto.",
+   "prezzo": "Freemium gratis; Plus 366 €/anno IVA inclusa per i professionisti, 399 € per artigiani e commercianti",
+   "anno_prof": 366,
+   "anno_art": 399,
+   "promo": "",
+   "url": ""
+  },
+  {
+   "id": "qonto",
+   "nome": "Qonto",
+   "cat": "conto",
+   "etichetta": "Conto business",
+   "testo": "Conto online con IBAN italiano, carte, fatturazione integrata e sotto-conti per mettere da parte le tasse.",
+   "prezzo": "da 9 €/mese + IVA con piano annuale, primo mese di prova gratuito",
+   "promo": "",
+   "url": ""
+  },
+  {
+   "id": "finom",
+   "nome": "Finom",
+   "cat": "conto",
+   "etichetta": "Conto business",
+   "testo": "Conto aziendale con IBAN italiano e fatture elettroniche.",
+   "prezzo": "",
+   "promo": "",
+   "url": ""
+  },
+  {
+   "id": "lokky",
+   "nome": "Lokky",
+   "cat": "assicurazione",
+   "etichetta": "RC professionale",
+   "testo": "Broker assicurativo digitale per micro-imprese, professionisti e freelance: preventivo e polizza online.",
+   "prezzo": "preventivo online in pochi minuti",
+   "promo": "",
+   "url": ""
+  }
+ ]
 }

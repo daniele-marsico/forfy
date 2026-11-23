@@ -26,6 +26,8 @@ const prof = JSON.parse(readFileSync(join(ROOT, "seo/professioni.json"), "utf8")
 const partnerCfg = JSON.parse(readFileSync(join(ROOT, "seo/partner.json"), "utf8"));
 const allPartners = partnerCfg.partner;
 const partners = allPartners.filter(p => p.url);
+// Link di tracciamento con subid (financeAds: &subid=...) per sapere da quale pagina arriva la conversione
+export const track = (url, src) => url ? url + (url.includes("?") ? "&" : "?") + "subid=" + encodeURIComponent(String(src).replace(/[^a-z0-9-]/gi, "-").slice(0, 40)) : "";
 
 const eur = n => new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0, useGrouping: "always" }).format(Math.round(n));
 const pct = n => String(n).replace(".", ",") + "%";
@@ -41,7 +43,7 @@ function calc(F, coef, gest, ali = 15) {
 }
 
 function partnerBlock(src = "guida") {
-  const list = partners.length ? `<p class="muted small">Link di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(p.url)}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.etichetta)}</span></a><span>${esc(p.testo)}</span>${p.promo ? `<span class="promo">${esc(p.promo)}</span>` : ""}</li>`).join("")}</ul>` : "";
+  const list = partners.length ? `<p class="muted small">Link di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te.</p><ul>${partners.map(p => `<li><a href="${esc(track(p.url, src))}" rel="sponsored noopener" target="_blank"><b>${esc(p.nome)}</b> · <span class="muted">${esc(p.etichetta)}</span></a><span>${esc(p.testo)}</span>${p.promo ? `<span class="promo">${esc(p.promo)}</span>` : ""}</li>`).join("")}</ul>` : "";
   return `<section class="card partners"><h2>Strumenti utili per la tua partita IVA</h2>
 <p>Commercialista, conto, assicurazione: <b>scopri in 60 secondi cosa ti manca</b> con il check-up gratuito.</p>
 <a class="btn" href="/check-up-partita-iva/?source=${src}">Fai il check-up partita IVA</a>
@@ -171,7 +173,7 @@ ${partnerBlock("guida-hub")}
 // Scrittura
 const outDir = join(ROOT, "tasse-forfettario");
 if (existsSync(outDir)) rmSync(outDir, { recursive: true });
-const kit = kitPages({ shell, esc, eur, calc, P, BASE, allPartners, verificati: partnerCfg.verificati });
+const kit = kitPages({ shell, esc, eur, calc, P, BASE, allPartners, track, verificati: partnerCfg.verificati });
 const pages = [hub(), ...prof.map(page), ...kit];
 for (const p of pages) { const f = join(ROOT, p.path, "index.html"); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, p.html); }
 

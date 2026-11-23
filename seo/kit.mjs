@@ -9,17 +9,17 @@ export const KIT_PATHS = [
   "/aprire-partita-iva-forfettaria/",
 ];
 
-export function kitPages({ shell, esc, eur, calc, P, BASE, allPartners, verificati }) {
+export function kitPages({ shell, esc, eur, calc, P, BASE, allPartners, track, verificati }) {
   const byId = Object.fromEntries(allPartners.map(p => [p.id, p]));
   const pct = n => String(n).replace(".", ",") + "%";
 
   // Scheda partner: informazione sempre, pulsante e promo solo con link
-  const card = (id, extra = "") => {
+  const card = (id, src = "guida", extra = "") => {
     const p = byId[id];
     if (!p) return "";
     return `<div class="pcard"><div class="ph"><b>${esc(p.nome)}</b><span class="tag">${esc(p.etichetta)}</span></div>
 <p>${esc(p.testo)}</p>${p.prezzo ? `<p class="small muted">Prezzo: ${esc(p.prezzo)}</p>` : ""}${extra}
-${p.url && p.promo ? `<p class="promo">${esc(p.promo)}</p>` : ""}${p.url ? `<a class="btn" href="${esc(p.url)}" rel="sponsored noopener" target="_blank">Vai a ${esc(p.nome)}</a>` : ""}</div>`;
+${p.url && p.promo ? `<p class="promo">${esc(p.promo)}</p>` : ""}${p.url ? `<a class="btn" href="${esc(track(p.url, src))}" rel="sponsored noopener" target="_blank">Vai a ${esc(p.nome)}</a>` : ""}</div>`;
   };
   const disclosure = ids => ids.some(id => byId[id] && byId[id].url)
     ? `<p class="muted small">Alcuni link sono di affiliazione: se ti iscrivi, Forfettix può ricevere una commissione, senza costi in più per te. Non cambia il prezzo né l'ordine in cui presentiamo i servizi.</p>` : "";
@@ -146,7 +146,7 @@ ${ver}
 <li><b>Fai da te:</b> possibile, ma tieni conto del tempo e del rischio di sbagliare acconti e contributi. Usa almeno <a href="/">il calcolatore di Forfettix</a> per sapere quanto mettere da parte.</li>
 </ul>
 
-<section class="pgrid">${card("flextax")}${card("fiscozen")}</section>
+<section class="pgrid">${card("flextax", "commercialista")}${card("fiscozen", "commercialista")}</section>
 ${disclosure(["flextax", "fiscozen"])}
 ${ctaCheck("commercialista")}
 ${faqHtml(faq)}
@@ -190,7 +190,7 @@ ${crumbs("Conto business")}
 <li><b>Fatturazione elettronica</b> inclusa, se non usi già un altro software.</li>
 </ul>
 
-<section class="pgrid">${card("qonto")}${card("finom")}</section>
+<section class="pgrid">${card("qonto", "conto")}${card("finom", "conto")}</section>
 ${disclosure(["qonto", "finom"])}
 ${ver}
 ${ctaCheck("conto")}
@@ -232,7 +232,7 @@ ${crumbs("RC professionale")}
 <li><b>Franchigia:</b> la parte di danno che resta a carico tuo.</li>
 </ul>
 
-<section class="pgrid">${card("lokky")}</section>
+<section class="pgrid">${card("lokky", "rc")}</section>
 ${disclosure(["lokky"])}
 ${ctaCheck("rc")}
 ${faqHtml(faq)}
@@ -303,7 +303,7 @@ ${crumbs("Aprire partita IVA forfettaria")}
 </tbody></table></div>
 ${ver}
 
-<section class="pgrid">${card("fiscozen")}${card("flextax")}</section>
+<section class="pgrid">${card("fiscozen", "apertura")}${card("flextax", "apertura")}</section>
 ${disclosure(["fiscozen", "flextax"])}
 ${ctaCheck("apertura")}
 ${faqHtml(faq)}

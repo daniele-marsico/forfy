@@ -41,7 +41,7 @@
 
   function cta(id, fallbackUrl, fallbackTxt) {
     var p = cfg.p[id]; if (!p) return "";
-    if (p.url) return (p.promo ? '<p class="promo">' + esc(p.promo) + "</p>" : "") + '<a class="btn" href="' + esc(p.url) + '" rel="sponsored noopener" target="_blank">Vai a ' + esc(p.nome) + "</a>";
+    if (p.url) return (p.promo ? '<p class="promo">' + esc(p.promo) + "</p>" : "") + (id === "flextax" && A.tipo === "art" ? '<p class="small muted">FlexTax non segue la vendita di alimenti o di auto.</p>' : "") + '<a class="btn" href="' + esc(p.url + (p.url.indexOf("?") > -1 ? "&" : "?") + "subid=checkup") + '" rel="sponsored noopener" target="_blank">Vai a ' + esc(p.nome) + "</a>";
     return fallbackUrl ? '<a class="btn sec" href="' + fallbackUrl + '">' + fallbackTxt + "</a>" : "";
   }
   function item(cls, n, title, html) { return '<section class="card item ' + cls + '"><h3><span class="dot"></span>' + n + ". " + title + "</h3>" + html + "</section>"; }
