@@ -1,0 +1,39 @@
+# Link "condivisione interna" di Google Play per l'ultima build: si installa subito, senza aspettare la revisione
+name: Play Store - link condivisione interna
+on: workflow_dispatch
+permissions: { actions: read, contents: read }
+jobs:
+  share:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scarica l'ultimo AAB firmato
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          RUN=$(gh api "repos/${{ github.repository }}/actions/workflows/android.yml/runs?status=success&per_page=1" --jq '.workflow_runs[0].id')
+          echo "Build della run $RUN"
+          gh run download "$RUN" -R "${{ github.repository }}" -n Forfy-aab -D out
+          ls -la out
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -q google-api-python-client google-auth
+      - name: Carica e crea il link
+        env:
+          SA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          PKG: it.controllinghub.forfy
+        run: |
+          python - <<'EOF'
+          import glob, json, os
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+          creds = service_account.Credentials.from_service_account_info(
+              json.loads(os.environ["SA"]), scopes=["https://www.googleapis.com/auth/androidpublisher"])
+          ap = build("androidpublisher", "v3", credentials=creds, cache_discovery=False)
+          aab = sorted(glob.glob("out/*.aab"))[-1]
+          print("File:", aab)
+          res = ap.internalappsharingartifacts().uploadbundle(
+              packageName=os.environ["PKG"],
+              media_body=MediaFileUpload(aab, mimetype="application/octet-stream", resumable=True)).execute()
+          print("LINK:", res.get("downloadUrl"))
+          EOF
