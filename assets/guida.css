@@ -82,3 +82,12 @@ h3{font-size:1.05rem;margin:0 0 6px}
 .cta-check{background:var(--accent-soft);border-color:var(--accent)}
 .cmp td{text-align:left}.cmp td:first-child{font-weight:600}
 .partners .btn{margin-bottom:8px}
+/* Pagina forfettario 100.000 € 2027 */
+.calc select{width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 6px}
+.cmp .v{border-radius:12px;padding:10px 12px;font-size:.95rem;border:1px solid var(--line)}
+.cmp .v b{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.cmp .v.ok{background:var(--accent-soft)}.cmp .v.warn{background:var(--warn-soft)}.cmp .v.crit{background:#fbe3e1}
+@media (prefers-color-scheme:dark){.cmp .v.crit{background:#3d1d1a}}
+@media (max-width:520px){.cmp{grid-template-columns:1fr}}
+.stato{display:inline-block;font-size:.85rem;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--warn-soft)}

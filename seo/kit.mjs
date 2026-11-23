@@ -38,6 +38,7 @@ ${p.url && p.promo ? `<p class="promo">${esc(p.promo)}</p>` : ""}${p.url ? `<a c
     ["/conto-business-partita-iva/", "Conto business per forfettari"],
     ["/assicurazione-rc-professionale-freelance/", "RC professionale per freelance"],
     ["/tasse-forfettario/", "Tasse per professione"],
+    ["/forfettario-100000-euro-2027/", "Forfettario a 100.000 € dal 2027"],
   ].filter(([u]) => u !== self).map(([u, t]) => `<li><a href="${u}">${t}</a></li>`).join("")}</ul>`;
 
   const fz = byId.fiscozen, fx = byId.flextax;

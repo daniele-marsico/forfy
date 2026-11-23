@@ -11,3 +11,9 @@ Free PWA that estimates taxes and INPS contributions for Italian *partita IVA fo
 - `seo/kit.mjs` genera il **Check-up partita IVA** (`/check-up-partita-iva/`, logica in `assets/checkup.js`) e le guide commercialista online, conto business, RC professionale, apertura partita IVA.
 - Link di affiliazione (financeAds: Fiscozen, FlexTax, Qonto, Lokky): incollali in `seo/partner.json` → `url`, poi `node seo/build.mjs`. Senza link le schede restano informative, senza pulsante.
 - Nuove pagine SEO: aggiungile anche alla lista `SEO` in `functions/_middleware.js` e in `sw.js`.
+
+## Manovra 2027 (forfettario a 100.000 €)
+
+- App: interruttore «Simula le regole 2027» (Attività) e riquadro in Riepilogo; `?sim=2027` lo attiva da link. Soglie in `index.html` (`FLAT27`, `USCITA27`).
+- Pagina SEO `/forfettario-100000-euro-2027/` generata da `seo/soglia2027.mjs`, calcolatore in `assets/soglia2027.js`.
+- Quando la legge di bilancio è definitiva: aggiornare `STATO`/`AGGIORNATO` e i condizionali nella pagina, e rendere la simulazione la regola predefinita nell'app.

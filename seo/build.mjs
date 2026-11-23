@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { kitPages } from "./kit.mjs";
+import { soglia2027Page } from "./soglia2027.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = "https://forfettix.controllinghub.com";
@@ -94,7 +95,7 @@ function page(x) {
     [`Che coefficiente di redditività ha un ${x.nome} forfettario?`, `Con un codice ATECO come ${x.ateco} (${x.atecoDesc}) il coefficiente è il ${coef}%: le tasse si calcolano solo sul ${coef}% di quello che incassi, il resto è considerato spesa forfettaria.`],
     [`Quanto resta netto a un ${x.nome} che incassa 30.000 € l'anno?`, `Con l'imposta al 15% restano circa ${eur(e30.net)}: ${eur(e30.inps)} di contributi INPS e ${eur(e30.tax)} di imposta sostitutiva. Con l'imposta al 5% dei primi cinque anni il netto sale a circa ${eur(e30n.net)}.`],
     [`Quale gestione INPS paga un ${x.nome}?`, sep ? `Di solito la gestione separata, con il ${pct(P.sep)} sul reddito forfettario e nessun minimo da pagare.` : `Di solito la ${GEST[x.gest].replace("Gestione","gestione")}, con una quota fissa annua anche a reddito basso e una percentuale sul reddito oltre il minimale.`],
-    [`Qual è il limite di incassi per restare forfettario?`, `85.000 € l'anno. Se li superi, dall'anno dopo passi al regime ordinario; se superi 100.000 € esci subito, già nell'anno in corso.`],
+    [`Qual è il limite di incassi per restare forfettario?`, `Oggi 85.000 € l'anno. Se li superi, dall'anno dopo passi al regime ordinario; se superi 100.000 € esci subito, già nell'anno in corso. La Manovra 2027, ancora in approvazione, propone di portare la flat tax a 100.000 € con l'IVA oltre 85.000 €.`],
   ];
   const body = `
 <nav class="crumbs"><a href="/">Forfettix</a> › <a href="/tasse-forfettario/">Tasse forfettario</a> › ${esc(x.titolo)}</nav>
@@ -134,6 +135,7 @@ ${x.nota ? `<p class="note">${esc(x.nota)}</p>` : ""}
 
 <h2>Il tetto degli 85.000 €</h2>
 <p>Il forfettario vale finché gli incassi dell'anno restano entro 85.000 €. Conviene controllare l'andamento durante l'anno, non a dicembre: Forfettix ti mostra quanto manca alla soglia ogni volta che registri un incasso.</p>
+<p>Novità: la Manovra 2027 propone di portare la flat tax a 100.000 €, con l'IVA oltre 85.000 €. <a href="/forfettario-100000-euro-2027/">Cosa cambia e calcolo</a>.</p>
 
 ${partnerBlock("guida-" + x.slug)}
 
@@ -164,6 +166,7 @@ ${Object.entries(byG).map(([k, list]) => `<h2>${GEST[k]}</h2><ul class="grid">${
 <section class="card"><h2>Come si calcolano le tasse nel forfettario</h2>
 <ol><li>Incassi × coefficiente di redditività = reddito forfettario.</li><li>Dal reddito togli i contributi INPS versati.</li><li>Sul resto paghi l'imposta sostitutiva: 15%, oppure 5% per i primi cinque anni se hai i requisiti.</li></ol>
 <a class="btn" href="/?source=guida-hub">Calcola con Forfettix</a></section>
+<p class="note"><b>Novità 2027:</b> la Manovra propone la flat tax fino a 100.000 € di incassi. <a href="/forfettario-100000-euro-2027/">Cosa cambia, IVA e calcolo</a>.</p>
 ${partnerBlock("guida-hub")}
 `;
   const jsonld = [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "Tasse forfettario per professione", url: BASE + path }];
@@ -174,7 +177,7 @@ ${partnerBlock("guida-hub")}
 const outDir = join(ROOT, "tasse-forfettario");
 if (existsSync(outDir)) rmSync(outDir, { recursive: true });
 const kit = kitPages({ shell, esc, eur, calc, P, BASE, allPartners, track, verificati: partnerCfg.verificati });
-const pages = [hub(), ...prof.map(page), ...kit];
+const pages = [hub(), soglia2027Page({ shell, esc, eur, calc, P, BASE }), ...prof.map(page), ...kit];
 for (const p of pages) { const f = join(ROOT, p.path, "index.html"); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, p.html); }
 
 const urls = ["/", ...pages.map(p => p.path)];

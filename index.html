@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Forfettix – Calcolo tasse e INPS regime forfettario 2026</title>
 <link rel="canonical" href="https://forfettix.controllinghub.com/">
-<meta name="description" content="Calcolo di tasse e contributi INPS per partite IVA forfettarie: incassi, tetto 85.000 € e quanto accantonare.">
+<meta name="description" content="Calcolo di tasse e contributi INPS per partite IVA forfettarie: incassi, tetto 85.000 €, simulazione flat tax 100.000 € del 2027 e quanto accantonare.">
 <meta name="theme-color" content="#0d6e57" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f1513" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -57,6 +57,12 @@ h2{font-family:var(--display);font-size:1.05rem;margin:0;font-weight:700}
 .small{font-size:.85rem}
 .checkup-card{text-decoration:none;color:var(--ink);gap:4px;border-color:var(--accent)}
 .checkup-card b{font-size:1.05rem}
+.n27{gap:6px;border-color:var(--accent)}
+.n27 b{font-size:1.05rem}
+.n27 .row2{margin-top:6px}
+.n27 a.btn{display:block;text-align:center;text-decoration:none}
+.n27.on{background:var(--accent-soft)}
+.n27.on .btn.sec{background:var(--surface)}
 
 /* Hero accantonare */
 .hero{background:var(--accent);color:var(--on-accent);border:0}
@@ -260,10 +266,21 @@ nav.tabs .ic{display:flex;align-items:center;justify-content:center;width:56px;h
       </div>
       <div class="meter" id="meter" role="img" aria-label="Avanzamento verso il tetto">
         <div class="fill" id="fill" style="width:0%"></div>
-        <div class="tick" style="left:85%"><span>85k</span></div>
-        <div class="tick end"><span>100k</span></div>
+        <div class="tick" id="tk1" style="left:85%"><span>85k</span></div>
+        <div class="tick" id="tk2" style="left:87%" hidden><span>100k</span></div>
+        <div class="tick end"><span id="tk-end">100k</span></div>
       </div>
       <div class="status ok" id="status"></div>
+    </div>
+
+    <div class="card n27" id="n27">
+      <span class="label" id="n27-lbl">Novità · Manovra 2027</span>
+      <b id="n27-t">Flat tax fino a 100.000 €</b>
+      <span class="small muted" id="n27-d">Proposta in approvazione in Parlamento: guarda come cambierebbe il tuo calcolo con le nuove soglie.</span>
+      <div class="row2">
+        <button class="btn" type="button" id="n27-btn">Simula il 2027</button>
+        <a class="btn sec" href="https://forfettix.controllinghub.com/forfettario-100000-euro-2027/?source=app" target="_blank" rel="noopener">Cosa cambia</a>
+      </div>
     </div>
 
     <div class="card">
@@ -334,6 +351,7 @@ nav.tabs .ic{display:flex;align-items:center;justify-content:center;width:56px;h
       </div>
       <label class="toggle" for="in-sgr"><span>Sgravio contributivo 35%<small>Solo artigiani e commercianti, su domanda all'INPS</small></span><span class="switch"><input type="checkbox" id="in-sgr" role="switch"><i></i></span></label>
       <label class="toggle" for="in-new"><span>Nuova attività<small>Imposta al 5% per i primi 5 anni, se hai i requisiti</small></span><span class="switch"><input type="checkbox" id="in-new" role="switch"><i></i></span></label>
+      <label class="toggle" for="in-27"><span>Simula le regole 2027<small>Manovra in approvazione: flat tax fino a 100.000 €, IVA oltre 85.000 €</small></span><span class="switch"><input type="checkbox" id="in-27" role="switch"><i></i></span></label>
       <div class="subsec">
         <h3>Lavoro da dipendente</h3>
         <label class="toggle" for="in-dip"><span>Sei ancora dipendente?<small>Anche part-time, nel momento in cui usi la partita IVA</small></span><span class="switch"><input type="checkbox" id="in-dip" role="switch"><i></i></span></label>
@@ -370,11 +388,11 @@ nav.tabs .ic{display:flex;align-items:center;justify-content:center;width:56px;h
 
     <div class="card disclaimer">
       <h2>Avviso importante</h2>
-      <p>Forfettix è uno strumento di stima: non è consulenza fiscale, contabile o previdenziale. I valori usati (soglia di 85.000 €, imposta al 15% o 5%, aliquote e quote minime INPS 2026, coefficienti per codice ATECO) possono cambiare, e la gestione INPS suggerita è solo indicativa. Prima di prendere decisioni o versare importi, verifica sempre con il tuo commercialista.</p>
+      <p>Forfettix è uno strumento di stima: non è consulenza fiscale, contabile o previdenziale. I valori usati (soglia di 85.000 €, imposta al 15% o 5%, aliquote e quote minime INPS 2026, coefficienti per codice ATECO) possono cambiare, e la gestione INPS suggerita è solo indicativa. La simulazione 2027 usa le regole proposte dal disegno di legge di bilancio 2027 (flat tax fino a 100.000 €, IVA oltre 85.000 €, uscita oltre 115.000 €), non ancora approvate in via definitiva. Prima di prendere decisioni o versare importi, verifica sempre con il tuo commercialista.</p>
       <p><b>Privacy:</b> Forfettix non raccoglie dati personali. Tutto ciò che inserisci è salvato nella memoria del tuo browser su questo dispositivo e non viene inviato a nessuno. <a href="privacy.html">Informativa privacy completa</a></p>
     </div>
     <p class="note" style="text-align:center"><a href="/tasse-forfettario/">Guide: tasse forfettario per professione</a></p>
-    <p class="note" style="text-align:center">Forfettix · versione 1.5 · realizzata da <a href="https://controllinghub.netlify.app" target="_blank" rel="noopener">ControllingHub</a></p>
+    <p class="note" style="text-align:center">Forfettix · versione 1.6 · realizzata da <a href="https://controllinghub.netlify.app" target="_blank" rel="noopener">ControllingHub</a></p>
   </section>
 </main>
 
@@ -416,6 +434,8 @@ nav.tabs .ic{display:flex;align-items:center;justify-content:center;width:56px;h
 (function(){
 "use strict";
 const SOGLIA=85000, USCITA=100000, KEY="forfy-state-v1";
+/* Manovra 2027 (ddl di bilancio, in approvazione): flat tax fino a 100.000 €, IVA oltre 85.000 €, uscita immediata oltre 115.000 € */
+const FLAT27=100000, USCITA27=115000;
 const DEF_P={sep:26.07,sepr:24,min:18808,qa:4521.36,qc:4611.60,aa:24,ac:24.48};
 const GROUPS=[
  {id:"alim",coef:40,name:"Industrie alimentari e delle bevande",codes:["10","11"],kw:["alimentar","bevand","panific","pasticc","birrific"],gest:"artigiani"},
@@ -471,12 +491,25 @@ function render(){
   $("y-lbl").textContent=year;$("y2").textContent=year;$("y3").textContent=year;$("y-next").disabled=year>=NOWY+1;
   const items=yearItems(),F=items.reduce((s,i)=>s+i.importo,0),c=calc(F);
   $("tot").textContent=eur(F);$("tot2").textContent=eur(F);
-  $("fill").style.width=Math.min(100,F/USCITA*100)+"%";
+  const R27=!!state.r2027,END=R27?USCITA27:USCITA;
+  $("fill").style.width=Math.min(100,F/END*100)+"%";
+  $("tk1").style.left=(SOGLIA/END*100)+"%";$("tk2").hidden=!R27;$("tk2").style.left=(FLAT27/END*100)+"%";$("tk-end").textContent=R27?"115k":"100k";
   const m=$("meter"),st=$("status");m.className="meter";
-  if(F>USCITA){m.classList.add("crit");st.className="status crit";st.innerHTML="Hai superato <b>100.000 €</b>: esci dal forfettario da subito e applichi l'IVA dall'operazione che ha fatto superare il limite. Parlane subito con il commercialista."}
-  else if(F>SOGLIA){m.classList.add("crit");st.className="status crit";st.innerHTML="Sopra gli <b>85.000 €</b>: resti forfettario quest'anno, ma dal "+(year+1)+" passi al regime ordinario. Margine prima dei 100.000 €: <b class='num'>"+eur(USCITA-F)+"</b>."}
+  if(R27){const pre="<b>Simulazione 2027</b> · ";
+    if(F>USCITA27){m.classList.add("crit");st.className="status crit";st.innerHTML=pre+"Oltre <b>115.000 €</b>: esci subito dal forfettario anche per le tasse e paghi l'IRPEF ordinaria su tutto l'anno, quindi questa stima non vale più. Parlane subito con il commercialista."}
+    else if(F>FLAT27){m.classList.add("crit");st.className="status crit";st.innerHTML=pre+"Oltre <b>100.000 €</b>: l'IVA scatta subito, dall'operazione che ha fatto superare il limite. La flat tax resta fino a fine anno, poi dal "+(year+1)+" passi al regime ordinario. Margine prima dei 115.000 €: <b class='num'>"+eur(USCITA27-F)+"</b>."}
+    else if(F>SOGLIA){m.classList.add("warn");st.className="status warn";st.innerHTML=pre+"Sopra gli <b>85.000 €</b>: resti in flat tax, ma diventi soggetto IVA (il testo non chiarisce ancora da quando). Margine prima dei 100.000 €: <b class='num'>"+eur(FLAT27-F)+"</b>."}
+    else if(F>SOGLIA*0.85){m.classList.add("warn");st.className="status warn";st.innerHTML=pre+"Ti avvicini agli 85.000 €: oltre resti in flat tax, ma con l'IVA. Restano <b class='num'>"+eur(SOGLIA-F)+"</b>."}
+    else{st.className="status ok";st.innerHTML=pre+"Restano <b class='num'>"+eur(SOGLIA-F)+"</b> prima degli 85.000 € (soglia IVA) e <b class='num'>"+eur(FLAT27-F)+"</b> prima del nuovo tetto di 100.000 €."}}
+  else if(F>USCITA){m.classList.add("crit");st.className="status crit";st.innerHTML="Hai superato <b>100.000 €</b>: esci dal forfettario da subito e applichi l'IVA dall'operazione che ha fatto superare il limite. Parlane subito con il commercialista."}
+  else if(F>SOGLIA){m.classList.add("crit");st.className="status crit";st.innerHTML="Sopra gli <b>85.000 €</b>: resti forfettario quest'anno, ma dal "+(year+1)+" passi al regime ordinario. Margine prima dei 100.000 €: <b class='num'>"+eur(USCITA-F)+"</b>."+(year>=2026?"<br><small>Novità: con la Manovra 2027, se approvata così, potresti restare in flat tax anche nel "+(year+1)+", ma con l'IVA. Prova la simulazione qui sotto.</small>":"")}
   else if(F>SOGLIA*0.85){m.classList.add("warn");st.className="status warn";st.innerHTML="Ti avvicini al tetto: restano <b class='num'>"+eur(SOGLIA-F)+"</b> prima degli 85.000 €."}
   else{st.className="status ok";st.innerHTML="Restano <b class='num'>"+eur(SOGLIA-F)+"</b> prima della soglia di 85.000 €."}
+  const n=$("n27");n.classList.toggle("on",R27);$("in-27").checked=R27;
+  $("n27-lbl").textContent=R27?"Simulazione 2027 attiva":"Novità · Manovra 2027";
+  $("n27-t").textContent=R27?"Stai vedendo le regole proposte":"Flat tax fino a 100.000 €";
+  $("n27-d").textContent=R27?"Flat tax fino a 100.000 €, IVA oltre 85.000 €, uscita immediata oltre 115.000 €. Sono le regole del disegno di legge: possono cambiare prima dell'approvazione definitiva.":"Proposta in approvazione in Parlamento: guarda come cambierebbe il tuo calcolo con le nuove soglie.";
+  $("n27-btn").textContent=R27?"Torna alle regole attuali":"Simula il 2027";$("n27-btn").className=R27?"btn sec":"btn";
 
   $("r-acc").textContent=eur(c.acc);$("r-red").textContent=eur(c.R);$("r-inps").textContent=eur(c.inps);$("r-imp").textContent=eur(c.imp);
   $("r-tax").textContent=eur(c.tax);$("r-net").textContent=eur(c.net);$("r-coef").textContent=c.coef+"%";$("r-ali").textContent=c.ali+"%";
@@ -602,6 +635,8 @@ $("att-done").onclick=()=>{const first=!state.setupDone;state.setupDone=true;sav
 $("in-gest").onchange=e=>{$("gest-hint").hidden=true;state.gest=e.target.value;if(state.gest==="separata")state.sgravio=false;save();render()};
 $("in-sgr").onchange=e=>{state.sgravio=e.target.checked;save();render()};
 $("in-new").onchange=e=>{state.nuova=e.target.checked;save();render()};
+$("in-27").onchange=e=>{state.r2027=e.target.checked;save();render()};
+$("n27-btn").onclick=()=>{state.r2027=!state.r2027;save();render();toast(state.r2027?"Simulazione 2027 attiva: regole proposte, non ancora definitive":"Regole attuali")};
 $("in-dip").onchange=e=>{state.dip=e.target.checked;save();render()};
 $("in-dip35").onchange=e=>{state.dip35=e.target.checked;save();render()};
 ["sep","sepr","min","qa","qc","aa","ac"].forEach(k=>$("p-"+k).addEventListener("change",e=>{const v=parseNum(e.target.value);if(v>=0){state.params[k]=v;save()}render()}));
@@ -651,7 +686,7 @@ $("install-no").onclick=()=>{$("install-bar").hidden=true;try{sessionStorage.set
 window.addEventListener("appinstalled",()=>{$("install-bar").hidden=true;toast("Forfettix installata")});
 if("serviceWorker" in navigator&&location.protocol!=="file:")window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
 
-load();if(!state.setupDone&&state.incassi.length)state.setupDone=true;render();show(state.setupDone?"home":"att");
+load();if(/[?&]sim=2027\b/.test(location.search)){state.r2027=true;save()}if(!state.setupDone&&state.incassi.length)state.setupDone=true;render();show(state.setupDone?"home":"att");
 })();
 </script>
 </body>
