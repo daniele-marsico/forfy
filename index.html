@@ -627,7 +627,9 @@ let wipeArm=0;$("b-del").onclick=()=>{if(Date.now()-wipeArm>3000){wipeArm=Date.n
   state={incassi:[],ateco:"altre",atecoLabel:"",gest:"separata",sgravio:false,nuova:false,dip:false,dip35:false,params:{...DEF_P}};save();render();$("b-del").textContent="Cancella tutti i dati";wipeArm=0;toast("Dati cancellati")};
 
 /* Installazione */
-const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+/* Nell'app nativa (Capacitor) l'invito a installare non ha senso: è già installata */
+const nativeApp=!!(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())||/; wv\)/.test(navigator.userAgent);
+const standalone=nativeApp||matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
 const isMobile=isIOS||/android/i.test(navigator.userAgent);
 const inApp=/FBAN|FBAV|Instagram|Line\/|Telegram|LinkedInApp|GSA\//i.test(navigator.userAgent);
