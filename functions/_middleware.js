@@ -4,7 +4,7 @@
 //   ma viene marcata noindex così Google non la mostra come duplicato.
 const CANONICAL = "forfettix.controllinghub.com";
 // Pagine SEO: esistono solo sull'indirizzo ufficiale (tienile allineate a seo/kit.mjs KIT_PATHS)
-const SEO = ["/tasse-forfettario", "/check-up-partita-iva", "/commercialista-online-forfettario", "/conto-business-partita-iva", "/assicurazione-rc-professionale-freelance", "/aprire-partita-iva-forfettaria", "/forfettario-100000-euro-2027"];
+const SEO = ["/tasse-forfettario", "/check-up-partita-iva", "/commercialista-online-forfettario", "/conto-business-partita-iva", "/assicurazione-rc-professionale-freelance", "/aprire-partita-iva-forfettaria", "/forfettario-100000-euro-2027", "/ricevuta-prestazione-occasionale", "/prestazione-occasionale-o-partita-iva"];
 
 export async function onRequest({ request, next }) {
   const url = new URL(request.url);

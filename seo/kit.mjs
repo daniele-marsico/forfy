@@ -39,6 +39,8 @@ ${p.url && p.promo ? `<p class="promo">${esc(p.promo)}</p>` : ""}${p.url ? `<a c
     ["/assicurazione-rc-professionale-freelance/", "RC professionale per freelance"],
     ["/tasse-forfettario/", "Tasse per professione"],
     ["/forfettario-100000-euro-2027/", "Forfettario a 100.000 € dal 2027"],
+    ["/ricevuta-prestazione-occasionale/", "Ricevuta prestazione occasionale (generatore)"],
+    ["/prestazione-occasionale-o-partita-iva/", "Prestazione occasionale o partita IVA?"],
   ].filter(([u]) => u !== self).map(([u, t]) => `<li><a href="${u}">${t}</a></li>`).join("")}</ul>`;
 
   const fz = byId.fiscozen, fx = byId.flextax;

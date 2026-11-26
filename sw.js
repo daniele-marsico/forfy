@@ -1,6 +1,6 @@
-const CACHE = "forfettix-v11";
+const CACHE = "forfettix-v12";
 // Pagine SEO (guide, check-up): sempre in rete, non devono sostituire l'app in cache
-const SEO = ["/tasse-forfettario", "/check-up-partita-iva", "/commercialista-online-forfettario", "/conto-business-partita-iva", "/assicurazione-rc-professionale-freelance", "/aprire-partita-iva-forfettaria", "/forfettario-100000-euro-2027", "/privacy"];
+const SEO = ["/tasse-forfettario", "/check-up-partita-iva", "/commercialista-online-forfettario", "/conto-business-partita-iva", "/assicurazione-rc-professionale-freelance", "/aprire-partita-iva-forfettaria", "/forfettario-100000-euro-2027", "/ricevuta-prestazione-occasionale", "/prestazione-occasionale-o-partita-iva", "/privacy"];
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/maskable-512.png", "./icons/apple-touch-icon.png", "./icons/favicon-32.png", "./ateco.json"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); self.skipWaiting(); });
 self.addEventListener("activate", e => {

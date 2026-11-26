@@ -1,0 +1,33 @@
+/* Generatore ricevuta prestazione occasionale */
+.rcv input:not([type=radio]):not([type=checkbox]){width:100%;font:inherit;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.rcv input[inputmode]{font-size:1.2rem}
+.rcv h2{font-size:1.05rem;margin:22px 0 4px}.rcv h2:first-child{margin-top:0}
+.seg{display:grid;gap:8px;margin:8px 0 4px}
+.seg label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0;font-weight:400;cursor:pointer}
+.seg label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.seg input{margin-top:5px}.seg span{display:flex;flex-direction:column}.seg small{color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button.btn{width:100%;border:0;font:inherit;font-weight:700;cursor:pointer}
+.center{text-align:center}
+/* Documento */
+.ricevuta{margin:20px 0}
+.doc{background:#fff;color:#111;border:1px solid var(--line);border-radius:6px;padding:28px 26px;font:15px/1.55 Georgia,"Times New Roman",serif;box-shadow:0 2px 12px rgb(0 0 0/.06)}
+.doc-h{display:flex;justify-content:space-between;gap:20px;font-size:.92rem}
+.doc-h .dx{text-align:right}
+.doc h3{font-size:1.02rem;margin:24px 0 12px;font-family:inherit}
+.doc table{width:100%;border-collapse:collapse;margin:14px 0}
+.doc td{padding:6px 0;border-bottom:1px solid #ddd}.doc td:last-child{text-align:right;white-space:nowrap;padding-left:12px}
+.doc tr.tot td{font-weight:700;border-bottom:2px solid #111}
+.doc .nota{font-size:.82rem;color:#333;margin:6px 0}
+.doc-f{display:flex;justify-content:space-between;align-items:flex-end;margin-top:28px;gap:20px}
+.bollo{border:1px dashed #888;width:86px;height:100px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.72rem;color:#666}
+.firma{text-align:right;font-size:.92rem}.firma span{display:inline-block;width:200px;border-bottom:1px solid #111;height:28px}
+@media (max-width:520px){.doc{padding:18px 14px;font-size:14px}.doc-h{flex-direction:column}.doc-h .dx{text-align:left}}
+@media print{
+  @page{margin:16mm}
+  body{background:#fff}
+  body > *:not(main), main > *:not(#ricevuta){display:none!important}
+  main{padding:0;max-width:none}
+  #ricevuta{margin:0}
+  .doc{border:0;box-shadow:none;padding:0}
+}

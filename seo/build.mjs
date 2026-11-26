@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { kitPages } from "./kit.mjs";
 import { soglia2027Page } from "./soglia2027.mjs";
+import { occasionalePages } from "./occasionale.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE = "https://forfettix.controllinghub.com";
@@ -49,7 +50,7 @@ function partnerBlock(src = "guida") {
 <p>Commercialista, conto, assicurazione: <b>scopri in 60 secondi cosa ti manca</b> con il check-up gratuito.</p>
 <a class="btn" href="/check-up-partita-iva/?source=${src}">Fai il check-up partita IVA</a>
 ${list}
-<p class="small"><a href="/commercialista-online-forfettario/">Commercialista online: prezzi a confronto</a> · <a href="/conto-business-partita-iva/">Conto business</a> · <a href="/assicurazione-rc-professionale-freelance/">RC professionale</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire la partita IVA</a></p></section>`;
+<p class="small"><a href="/commercialista-online-forfettario/">Commercialista online: prezzi a confronto</a> · <a href="/conto-business-partita-iva/">Conto business</a> · <a href="/assicurazione-rc-professionale-freelance/">RC professionale</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire la partita IVA</a> · <a href="/ricevuta-prestazione-occasionale/">Ricevuta prestazione occasionale</a></p></section>`;
 }
 
 function shell({ title, desc, path, body, jsonld }) {
@@ -73,7 +74,7 @@ ${jsonld.map(j => `<script type="application/ld+json">${JSON.stringify(j)}</scri
 ${body}
 <p class="disc">Stima indicativa con valori ${YEAR} (imposta sostitutiva, coefficienti, aliquote e quote INPS): non è consulenza fiscale. I codici ATECO sono esempi: verifica il tuo nel certificato di attribuzione della partita IVA e chiedi conferma al tuo commercialista.</p>
 </main>
-<footer><a href="/">Forfettix</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/check-up-partita-iva/">Check-up partita IVA</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire partita IVA</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
+<footer><a href="/">Forfettix</a> · <a href="/tasse-forfettario/">Tasse forfettario per professione</a> · <a href="/check-up-partita-iva/">Check-up partita IVA</a> · <a href="/aprire-partita-iva-forfettaria/">Aprire partita IVA</a> · <a href="/ricevuta-prestazione-occasionale/">Ricevuta prestazione occasionale</a> · <a href="/privacy.html">Privacy</a> · realizzato da <a href="https://controllinghub.com">ControllingHub</a></footer>
 <script src="/assets/calc.js" defer></script>
 </body>
 </html>
@@ -177,7 +178,8 @@ ${partnerBlock("guida-hub")}
 const outDir = join(ROOT, "tasse-forfettario");
 if (existsSync(outDir)) rmSync(outDir, { recursive: true });
 const kit = kitPages({ shell, esc, eur, calc, P, BASE, allPartners, track, verificati: partnerCfg.verificati });
-const pages = [hub(), soglia2027Page({ shell, esc, eur, calc, P, BASE }), ...prof.map(page), ...kit];
+const occ = occasionalePages({ shell, esc, eur, BASE, allPartners, track });
+const pages = [hub(), soglia2027Page({ shell, esc, eur, calc, P, BASE }), ...prof.map(page), ...kit, ...occ];
 for (const p of pages) { const f = join(ROOT, p.path, "index.html"); mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, p.html); }
 
 const urls = ["/", ...pages.map(p => p.path)];
